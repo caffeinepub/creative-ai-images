@@ -1,0 +1,98 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-a-negative-prompt-preset-selector-to-the-imagegenerationform-component-with-at-least-5-preset-options-e-g-low-quality-anatomical-issues-artifacts-default-safe-none-that-users-can-choose-from-a-dropdown",
+      "featureTitle": "Add a negative prompt preset selector to the ImageGenerationForm component with at least 5 preset options (e.g., 'Low Quality', 'Anatomical Issues', 'Artifacts', 'Default Safe', 'None') that users can choose from a dropdown",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/ImageGenerationForm.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-13"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-define-negative-prompt-preset-text-values-for-each-preset-option-that-contain-appropriate-stable-diffusion-negative-prompt-keywords-e-g-low-quality-preset-includes-keywords-like-low-quality-blurry-pixelated-distorted-anatomical-issues-includes-bad-anatomy-deformed-mutated-etc",
+      "featureTitle": "Define negative prompt preset text values for each preset option that contain appropriate Stable Diffusion negative prompt keywords (e.g., 'Low Quality' preset includes keywords like 'low quality, blurry, pixelated, distorted'; 'Anatomical Issues' includes 'bad anatomy, deformed, mutated'; etc.)",
+      "files": [
+        "frontend/src/constants/negativePrompts.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-14"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-prompt-generation-logic-in-app-tsx-to-append-the-selected-negative-prompt-preset-text-to-the-generated-comprehensive-prompt-clearly-separating-it-from-the-positive-prompt-e-g-with-a-negative-prompt-prefix-or-similar-convention",
+      "featureTitle": "Update the prompt generation logic in App.tsx to append the selected negative prompt preset text to the generated comprehensive prompt, clearly separating it from the positive prompt (e.g., with a 'Negative prompt:' prefix or similar convention)",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-16"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-negative-prompt-preset-badge-to-the-imagedisplay-component-that-shows-the-selected-preset-name-alongside-the-existing-parameter-badges-body-type-height-weight-age-ethnicity-art-style",
+      "featureTitle": "Add a negative prompt preset badge to the ImageDisplay component that shows the selected preset name alongside the existing parameter badges (body type, height, weight, age, ethnicity, art style)",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/ImageDisplay.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-17"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-usesendqueries-mutation-hook-to-include-the-negativeprompt-parameter-when-calling-the-backend-sendqueries-method",
+      "featureTitle": "Update the useSendQueries mutation hook to include the negativePrompt parameter when calling the backend sendQueries method",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-18"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

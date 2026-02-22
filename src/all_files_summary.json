@@ -1,0 +1,21 @@
+{
+  "backend/main.mo": "Main actor module that defines PoseCriteria type (including negativePrompt field) and a sendQueries function that stores combinations in a Set and returns them.",
+  "backend/migration.mo": "Migration module that defines old and new PoseCriteria types (new adds negativePrompt field) and a run function to migrate actor state from old to new schema.",
+  "feature_evidence.json": "Feature evidence report documenting five implemented features related to negative prompt presets, including UI components, constants, prompt generation logic, display badges, and backend integration.",
+  "frontend-file-summaries.txt": "JSON-formatted summaries of nine frontend files describing the app structure: main App component, Header, Footer, ImageGenerationForm with seven inputs, ImageDisplay with badges, useQueries hook, styling files, and negativePrompts constants.",
+  "frontend/index.css": "Tailwind CSS configuration with custom CSS variables for light and dark themes using OKLCH color space, defining design tokens for backgrounds, borders, accents, and chart colors.",
+  "frontend/index.html": "HTML entry point with viewport meta tag, title 'AI Image Studio', and script tag loading the React app from main.tsx.",
+  "frontend/src/App.tsx": "Main React app component managing GenerationParams state (7 fields including negativePromptPreset), rendering Header/Footer/Form/Display components, and generating comprehensive prompts from user selections.",
+  "frontend/src/components/Footer.tsx": "Footer component displaying copyright, current year, and attribution link to caffeine.ai with UTM tracking parameters and animated heart icon.",
+  "frontend/src/components/Header.tsx": "Header component with logo, app title 'AI Image Prompt Generator', 'Powered by AI' subtitle, and 'NSFW Supported' badge with alert icon.",
+  "frontend/src/components/ImageDisplay.tsx": "Display component showing generated prompt with separate positive and negative prompt sections, copy-to-clipboard button, sample image preview based on body type, and grid of parameter badges including negative prompt preset badge.",
+  "frontend/src/components/ImageGenerationForm.tsx": "React form component for collecting user inputs (body type, height, weight, age, ethnicity, art style, negative prompt preset) and submitting them to generate AI image prompts via the backend actor.",
+  "frontend/src/constants/negativePrompts.ts": "Defines preset negative prompts for Stable Diffusion image generation, including categories for low quality, anatomical issues, artifacts, safe content filtering, and none.",
+  "frontend/src/hooks/useActor.ts": "Custom React hook that creates and manages the backend actor instance using React Query, handling both authenticated and anonymous connections based on Internet Identity state.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides React context and hooks for Internet Identity authentication, managing login/logout flow, identity state, and AuthClient lifecycle with configurable options.",
+  "frontend/src/hooks/useQueries.ts": "Custom React Query mutation hook that sends pose criteria and generation parameters to the backend actor's sendQueries method, mapping frontend form data to backend PoseCriteria type.",
+  "frontend/src/index.css": "Tailwind CSS configuration with custom CSS variables for light/dark theme colors using OKLCH color space, plus utility animations for fade-in and slide-in effects.",
+  "frontend/src/main.tsx": "Application entry point that sets up React root with QueryClientProvider for React Query and InternetIdentityProvider for authentication context.",
+  "frontend/tailwind.config.js": "Tailwind CSS configuration defining custom color scheme using OKLCH variables, extended theme properties, animations, and plugin integrations for typography, container queries, and animations.",
+  "project_state.json": "Project state file defining an AI prompt generator app for image generation with extensive parameters (body types, age, ethnicity, art styles) and NSFW support. Tracks 11 existing features including form inputs, prompt generation, negative prompts, and modern UI design."
+}

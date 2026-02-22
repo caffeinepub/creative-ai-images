@@ -1,0 +1,111 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-22T10:54:37.490Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 7,
+    "implemented": 5,
+    "items": [
+      {
+        "id": "REQ-13",
+        "summary": "Add a negative prompt preset selector to the ImageGenerationForm component with at least 5 preset options (e.g., 'Low Quality', 'Anatomical Issues', 'Artifacts', 'Default Safe', 'None') that users can choose from a dropdown",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ImageGenerationForm.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ImageGenerationForm.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-14",
+        "summary": "Define negative prompt preset text values for each preset option that contain appropriate Stable Diffusion negative prompt keywords (e.g., 'Low Quality' preset includes keywords like 'low quality, blurry, pixelated, distorted'; 'Anatomical Issues' includes 'bad anatomy, deformed, mutated'; etc.)",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/constants/negativePrompts.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/constants/negativePrompts.ts"
+        ]
+      },
+      {
+        "id": "REQ-15",
+        "summary": "Update the PoseCriteria type in backend/main.mo to include a negativePrompt field of type Text to store the selected negative prompt preset text",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-16",
+        "summary": "Update the prompt generation logic in App.tsx to append the selected negative prompt preset text to the generated comprehensive prompt, clearly separating it from the positive prompt (e.g., with a 'Negative prompt:' prefix or similar convention)",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-17",
+        "summary": "Add a negative prompt preset badge to the ImageDisplay component that shows the selected preset name alongside the existing parameter badges (body type, height, weight, age, ethnicity, art style)",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ImageDisplay.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ImageDisplay.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-18",
+        "summary": "Update the useSendQueries mutation hook to include the negativePrompt parameter when calling the backend sendQueries method",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-19",
+        "summary": "Create a migration.mo file to handle upgrading existing PoseCriteria records to include the new negativePrompt field with a default empty string value for backward compatibility",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/ImageDisplay.tsx",
+    "frontend/src/components/ImageGenerationForm.tsx",
+    "frontend/src/constants/negativePrompts.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

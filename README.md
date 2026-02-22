@@ -1,2 +1,3 @@
-# creative-ai-images
-Exported from Caffeine project: Creative AI Images
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

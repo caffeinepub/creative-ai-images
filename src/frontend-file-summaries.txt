@@ -1,0 +1,11 @@
+{
+  "frontend/src/App.tsx": "Main application component managing state for all image generation parameters including the new negativePromptPreset field, and generating comprehensive AI prompts from selected parameters.",
+  "frontend/src/components/Header.tsx": "Header component displaying the app logo, title, and NSFW content support badge with professional styling.",
+  "frontend/src/components/Footer.tsx": "Footer component with copyright information and attribution link to caffeine.ai with proper UTM tracking.",
+  "frontend/src/components/ImageGenerationForm.tsx": "Form component with seven parameter inputs (body type, age, ethnicity, art style, height, weight, and negative prompt preset) that submits structured data to the backend with full validation.",
+  "frontend/src/components/ImageDisplay.tsx": "Display component showing the generated prompt text with both positive and negative prompt sections, copy functionality, sample image preview, and all seven parameter badges in an organized grid layout.",
+  "frontend/src/hooks/useQueries.ts": "React Query mutation hook that transforms form data including negative prompt preset into PoseCriteria type with the actual negative prompt text and sends it to the backend via sendQueries method.",
+  "frontend/src/index.css": "Global styles with OKLCH color system featuring electric blue and purple gradient theme for a modern AI/tech aesthetic with custom animations.",
+  "frontend/tailwind.config.js": "Tailwind configuration with extended color palette, custom font family, and design tokens supporting the vibrant tech-forward visual theme.",
+  "frontend/src/constants/negativePrompts.ts": "Defines negative prompt presets for Stable Diffusion with comprehensive keyword mappings for quality issues, anatomical problems, artifacts, safe content filtering, and a none option."
+}

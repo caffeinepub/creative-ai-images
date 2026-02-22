@@ -1,0 +1,103 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Add Stable Diffusion negative prompt presets",
+  "requirements": [
+    {
+      "id": "REQ-13",
+      "summary": "Add negative prompt preset selector to ImageGenerationForm with at least 5 preset options",
+      "acceptanceCriteria": [
+        "A dropdown/select input is added to the form for selecting negative prompt presets",
+        "At least 5 negative prompt preset options are available for selection",
+        "The selected preset is stored in the GenerationParams state alongside other parameters",
+        "The form validates that a negative prompt preset is selected before submission"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ImageGenerationForm.tsx",
+          "operation": "modify",
+          "description": "Add a negative prompt preset dropdown/select input following the existing form input pattern. Include at least 5 preset options: 'Low Quality', 'Anatomical Issues', 'Artifacts', 'Default Safe', and 'None'. Add the selected preset to the controlled form state and ensure validation requires a selection before submission."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add negativePromptPreset field to the GenerationParams state interface and initialization to store the selected negative prompt preset alongside other parameters (bodyType, age, ethnicity, artStyle, height, weight)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Define negative prompt preset text values with appropriate Stable Diffusion keywords",
+      "acceptanceCriteria": [
+        "Each preset option maps to a specific negative prompt text value with relevant keywords",
+        "Negative prompt texts are comprehensive and appropriate for Stable Diffusion",
+        "Presets cover common quality issues, anatomical problems, and artifact prevention"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/constants/negativePrompts.ts",
+          "operation": "create",
+          "description": "Create a constants file defining a mapping object from preset names to negative prompt text values. Include comprehensive Stable Diffusion keywords for each preset: 'Low Quality' (keywords like low quality, blurry, pixelated, distorted), 'Anatomical Issues' (bad anatomy, deformed, mutated), 'Artifacts' (artifacts, noise, compression), 'Default Safe' (NSFW prevention keywords), and 'None' (empty string). Export this mapping for use in other components."
+        }
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "summary": "Update prompt generation logic to append negative prompt preset text with clear separation",
+      "acceptanceCriteria": [
+        "Generated prompt includes both positive and negative prompt sections",
+        "Negative prompt is clearly labeled and separated from the positive prompt",
+        "The full prompt with negative prompt is displayed to the user after form submission"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update the prompt generation logic to look up the negative prompt text from the selected preset (using the constants from negativePrompts.ts) and append it to the comprehensive prompt. Use a clear separator like 'Negative prompt:' prefix to distinguish it from the positive prompt. Ensure the full prompt (positive + negative) is displayed in the UI after form submission."
+        }
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "summary": "Add negative prompt preset badge to ImageDisplay component",
+      "acceptanceCriteria": [
+        "A badge displaying the negative prompt preset name appears in the parameter badges grid",
+        "The badge follows the same styling pattern as existing parameter badges",
+        "The badge is visible after form submission in the ImageDisplay component"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ImageDisplay.tsx",
+          "operation": "modify",
+          "description": "Add a seventh badge to the parameter badges grid that displays the negative prompt preset name. Follow the same Badge component styling and layout pattern as the existing six parameter badges (body type, height, weight, age, ethnicity, art style). Accept the negative prompt preset as a prop from the parent component."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Pass the negativePromptPreset value from GenerationParams state to the ImageDisplay component as a prop so it can be displayed in the badge."
+        }
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "summary": "Update useSendQueries mutation hook to include negativePrompt parameter",
+      "acceptanceCriteria": [
+        "The mutation hook passes the negativePrompt value to the backend",
+        "The backend successfully receives and stores the negative prompt with other criteria",
+        "No TypeScript or runtime errors occur when submitting the form with negative prompt"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Update the mutation hook to accept and pass the negativePrompt parameter (the actual text value, not the preset name) to the backend actor's sendQueries method. Map the selected preset name to its corresponding negative prompt text using the constants from negativePrompts.ts before sending to the backend. Ensure TypeScript types match the PoseCriteria interface in backend.d.ts."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update the form submission logic to look up the negative prompt text from the selected preset and pass it to the useSendQueries mutation hook when calling sendQueries."
+        }
+      ]
+    }
+  ]
+}

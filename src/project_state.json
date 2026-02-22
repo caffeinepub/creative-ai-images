@@ -1,0 +1,235 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 7,
+  "summary": "AI prompt generator app for image generation where users can input extensive detail parameters including body types (oversized, plus-size, curvy, buxom, saggy), age (mature), ethnicity, and art styles (realistic, pencil, watercolors). Supports NSFW content generation.",
+  "architectural_notes": [
+    "Use AI image generation API (e.g., DALL-E, Stable Diffusion, or similar)",
+    "Input system should support multiple keyword fields for body characteristics",
+    "App functions as a prompt generator for AI image generation tools",
+    "Must support NSFW content generation and filtering",
+    "Extensive parameter system for body types, age, ethnicity, and art styles",
+    "Support negative prompts for Stable Diffusion with preset options"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-an-input-form-where-users-can-specify-multiple-detail-keywords-including-body-type-skinny-curvy-height-and-weight-for-image-generation",
+      "title": "Create an input form where users can specify multiple detail keywords including body type (skinny, curvy), height, and weight for image generation",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-the-generated-images-to-users-after-submission-showing-them-as-static-assets-in-the-frontend",
+      "title": "Display the generated images to users after submission, showing them as static assets in the frontend",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-creative-modern-visual-design-with-a-distinct-style-that-emphasizes-the-ai-powered-nature-of-the-app-using-colors-typography-and-layout-that-feel-tech-forward-and-visually-engaging",
+      "title": "Apply a creative, modern visual design with a distinct style that emphasizes the AI-powered nature of the app, using colors, typography, and layout that feel tech-forward and visually engaging",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-expand-the-body-type-selection-to-include-additional-options-oversized-plus-size-buxom-saggy-keep-the-existing-skinny-and-curvy-options",
+      "title": "Expand the body type selection to include additional options: oversized, plus-size, buxom, saggy. Keep the existing skinny and curvy options.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-age-parameter-selection-with-options-including-mature-age-and-other-relevant-age-ranges-young-adult-adult-mature",
+      "title": "Add an age parameter selection with options including mature age and other relevant age ranges (young adult, adult, mature).",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-ethnicity-selection-parameter-with-a-dropdown-of-diverse-ethnicity-options-caucasian-african-asian-hispanic-middle-eastern-mixed",
+      "title": "Add an ethnicity selection parameter with a dropdown of diverse ethnicity options (Caucasian, African, Asian, Hispanic, Middle Eastern, Mixed).",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-art-style-selection-parameter-with-options-realistic-pencil-watercolors",
+      "title": "Add an art style selection parameter with options: realistic, pencil, watercolors.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-a-comprehensive-text-prompt-from-all-selected-parameters-body-type-height-weight-age-ethnicity-art-style-that-can-be-used-for-ai-image-generation-display-this-generated-prompt-to-the-user-after-form-submission",
+      "title": "Generate a comprehensive text prompt from all selected parameters (body type, height, weight, age, ethnicity, art style) that can be used for AI image generation. Display this generated prompt to the user after form submission.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-imagedisplay-component-to-show-all-parameter-badges-including-the-new-fields-age-ethnicity-and-art-style-in-addition-to-existing-body-type-height-and-weight-badges",
+      "title": "Update the ImageDisplay component to show all parameter badges including the new fields: age, ethnicity, and art style, in addition to existing body type, height, and weight badges.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-visible-indicator-or-notice-that-the-app-supports-nsfw-content-generation-ensuring-users-understand-the-app-s-capabilities",
+      "title": "Add a visible indicator or notice that the app supports NSFW content generation, ensuring users understand the app's capabilities.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-negative-prompt-preset-selector-to-the-imagegenerationform-component-with-at-least-5-preset-options-e-g-low-quality-anatomical-issues-artifacts-default-safe-none-that-users-can-choose-from-a-dropdown",
+      "title": "Add a negative prompt preset selector to the ImageGenerationForm component with at least 5 preset options (e.g., 'Low Quality', 'Anatomical Issues', 'Artifacts', 'Default Safe', 'None') that users can choose from a dropdown",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-define-negative-prompt-preset-text-values-for-each-preset-option-that-contain-appropriate-stable-diffusion-negative-prompt-keywords-e-g-low-quality-preset-includes-keywords-like-low-quality-blurry-pixelated-distorted-anatomical-issues-includes-bad-anatomy-deformed-mutated-etc",
+      "title": "Define negative prompt preset text values for each preset option that contain appropriate Stable Diffusion negative prompt keywords (e.g., 'Low Quality' preset includes keywords like 'low quality, blurry, pixelated, distorted'; 'Anatomical Issues' includes 'bad anatomy, deformed, mutated'; etc.)",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-append-the-selected-negative-prompt-preset-text-to-the-generated-comprehensive-prompt-clearly-separating-it-from-the-positive-prompt-e-g-with-a-negative-prompt-prefix-or-similar-convention",
+      "title": "Update the prompt generation logic in App.tsx to append the selected negative prompt preset text to the generated comprehensive prompt, clearly separating it from the positive prompt (e.g., with a 'Negative prompt:' prefix or similar convention)",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-negative-prompt-preset-badge-to-the-imagedisplay-component-that-shows-the-selected-preset-name-alongside-the-existing-parameter-badges-body-type-height-weight-age-ethnicity-art-style",
+      "title": "Add a negative prompt preset badge to the ImageDisplay component that shows the selected preset name alongside the existing parameter badges (body type, height, weight, age, ethnicity, art style)",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usesendqueries-mutation-hook-to-include-the-negativeprompt-parameter-when-calling-the-backend-sendqueries-method",
+      "title": "Update the useSendQueries mutation hook to include the negativePrompt parameter when calling the backend sendQueries method",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Input form for multiple detail keywords (body type, height, weight, etc.)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "AI image generation based on input keywords",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Display generated images to user",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Store user-submitted keyword combinations (body type, height, weight) in the backend",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add extensive body type options: oversized, plus-size, curvy, buxom, saggy",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Add age parameter options including mature age",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add ethnicity selection parameter",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Add art style selection: realistic, pencil, watercolors",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Support NSFW content generation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Generate prompts for AI image generation based on all selected parameters",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Update the backend main actor to accept and store all new parameters: body type (expanded options), age, ethnicity, and art style in addition to existing height and weight fields.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Add Stable Diffusion negative prompt presets",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Update the PoseCriteria type in backend/main.mo to include a negativePrompt field of type Text to store the selected negative prompt preset text",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Create a migration.mo file to handle upgrading existing PoseCriteria records to include the new negativePrompt field with a default empty string value for backward compatibility",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "AI Image Studio",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

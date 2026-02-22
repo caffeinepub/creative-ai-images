@@ -1,0 +1,135 @@
+{
+  "kind": "build_request",
+  "title": "Add Stable Diffusion negative prompt presets",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-13",
+      "text": "Add a negative prompt preset selector to the ImageGenerationForm component with at least 5 preset options (e.g., 'Low Quality', 'Anatomical Issues', 'Artifacts', 'Default Safe', 'None') that users can choose from a dropdown",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "add Stable Diffusion negative prompt presets"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A dropdown/select input is added to the form for selecting negative prompt presets",
+        "At least 5 negative prompt preset options are available for selection",
+        "The selected preset is stored in the GenerationParams state alongside other parameters",
+        "The form validates that a negative prompt preset is selected before submission"
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Define negative prompt preset text values for each preset option that contain appropriate Stable Diffusion negative prompt keywords (e.g., 'Low Quality' preset includes keywords like 'low quality, blurry, pixelated, distorted'; 'Anatomical Issues' includes 'bad anatomy, deformed, mutated'; etc.)",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "add Stable Diffusion negative prompt presets"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each preset option maps to a specific negative prompt text value with relevant keywords",
+        "Negative prompt texts are comprehensive and appropriate for Stable Diffusion",
+        "Presets cover common quality issues, anatomical problems, and artifact prevention"
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Update the PoseCriteria type in backend/main.mo to include a negativePrompt field of type Text to store the selected negative prompt preset text",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ]
+      },
+      "acceptanceCriteria": [
+        "PoseCriteria type includes a new negativePrompt: Text field",
+        "The sendQueries function accepts and stores the negativePrompt value with other criteria",
+        "Backend compiles without errors after adding the new field"
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "text": "Update the prompt generation logic in App.tsx to append the selected negative prompt preset text to the generated comprehensive prompt, clearly separating it from the positive prompt (e.g., with a 'Negative prompt:' prefix or similar convention)",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Generated prompt includes both positive and negative prompt sections",
+        "Negative prompt is clearly labeled and separated from the positive prompt",
+        "The full prompt with negative prompt is displayed to the user after form submission"
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "text": "Add a negative prompt preset badge to the ImageDisplay component that shows the selected preset name alongside the existing parameter badges (body type, height, weight, age, ethnicity, art style)",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A badge displaying the negative prompt preset name appears in the parameter badges grid",
+        "The badge follows the same styling pattern as existing parameter badges",
+        "The badge is visible after form submission in the ImageDisplay component"
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "text": "Update the useSendQueries mutation hook to include the negativePrompt parameter when calling the backend sendQueries method",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The mutation hook passes the negativePrompt value to the backend",
+        "The backend successfully receives and stores the negative prompt with other criteria",
+        "No TypeScript or runtime errors occur when submitting the form with negative prompt"
+      ]
+    },
+    {
+      "id": "REQ-19",
+      "text": "Create a migration.mo file to handle upgrading existing PoseCriteria records to include the new negativePrompt field with a default empty string value for backward compatibility",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Migration file transforms old PoseCriteria records to include negativePrompt field",
+        "Existing records are preserved with appropriate default values",
+        "The upgrade process completes without data loss"
+      ]
+    }
+  ],
+  "constraints": [
+    "Follow the existing form input pattern used in ImageGenerationForm.tsx for consistency",
+    "Use the same styling and layout conventions as existing parameter inputs",
+    "Maintain the single-actor architecture in the backend",
+    "Ensure backward compatibility with existing stored PoseCriteria records"
+  ],
+  "nonGoals": [
+    "Implementing actual Stable Diffusion image generation (only prompt generation is in scope)",
+    "Adding custom negative prompt text input (presets only)",
+    "Changing existing parameter inputs or their behavior",
+    "Modifying the NSFW notice or branding elements"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
