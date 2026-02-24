@@ -1,0 +1,953 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 27,
+  "summary": "AI prompt generator app for image generation where users can input extensive detail parameters including body types (oversized, plus-size, curvy, buxom, saggy), age (mature), ethnicity, and art styles (realistic, pencil, watercolors). Supports NSFW content generation.",
+  "architectural_notes": [
+    "Use AI image generation API (e.g., DALL-E, Stable Diffusion, or similar)",
+    "Input system should support multiple keyword fields for body characteristics",
+    "App functions as a prompt generator for AI image generation tools",
+    "Must support NSFW content generation and filtering",
+    "Extensive parameter system for body types, age, ethnicity, and art styles",
+    "Support negative prompts for Stable Diffusion with preset options",
+    "Integrate Stable Diffusion API for actual image generation from prompts",
+    "Camera lens presets should include descriptive photography terms that influence perspective and depth of field in generated images",
+    "Save preset feature should store parameter combinations (body type, age, ethnicity, art style, aspect ratio, camera lens, negative prompts)",
+    "History feature should track and display previously generated prompts with their parameters"
+  ],
+  "known_issues": [
+    "Image generation is currently unavailable — backend Stable Diffusion API integration not yet implemented; app falls back to displaying the generated prompt and parameters only"
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-an-input-form-where-users-can-specify-multiple-detail-keywords-including-body-type-skinny-curvy-height-and-weight-for-image-generation",
+      "title": "Create an input form where users can specify multiple detail keywords including body type (skinny, curvy), height, and weight for image generation",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-the-generated-images-to-users-after-submission-showing-them-as-static-assets-in-the-frontend",
+      "title": "Display the generated images to users after submission, showing them as static assets in the frontend",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-creative-modern-visual-design-with-a-distinct-style-that-emphasizes-the-ai-powered-nature-of-the-app-using-colors-typography-and-layout-that-feel-tech-forward-and-visually-engaging",
+      "title": "Apply a creative, modern visual design with a distinct style that emphasizes the AI-powered nature of the app, using colors, typography, and layout that feel tech-forward and visually engaging",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-expand-the-body-type-selection-to-include-additional-options-oversized-plus-size-buxom-saggy-keep-the-existing-skinny-and-curvy-options",
+      "title": "Expand the body type selection to include additional options: oversized, plus-size, buxom, saggy. Keep the existing skinny and curvy options.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-age-parameter-selection-with-options-including-mature-age-and-other-relevant-age-ranges-young-adult-adult-mature",
+      "title": "Add an age parameter selection with options including mature age and other relevant age ranges (young adult, adult, mature).",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-ethnicity-selection-parameter-with-a-dropdown-of-diverse-ethnicity-options-caucasian-african-asian-hispanic-middle-eastern-mixed",
+      "title": "Add an ethnicity selection parameter with a dropdown of diverse ethnicity options (Caucasian, African, Asian, Hispanic, Middle Eastern, Mixed).",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-art-style-selection-parameter-with-options-realistic-pencil-watercolors",
+      "title": "Add an art style selection parameter with options: realistic, pencil, watercolors.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-a-comprehensive-text-prompt-from-all-selected-parameters-body-type-height-weight-age-ethnicity-art-style-that-can-be-used-for-ai-image-generation-display-this-generated-prompt-to-the-user-after-form-submission",
+      "title": "Generate a comprehensive text prompt from all selected parameters (body type, height, weight, age, ethnicity, art style) that can be used for AI image generation. Display this generated prompt to the user after form submission.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-imagedisplay-component-to-show-all-parameter-badges-including-the-new-fields-age-ethnicity-and-art-style-in-addition-to-existing-body-type-height-and-weight-badges",
+      "title": "Update the ImageDisplay component to show all parameter badges including the new fields: age, ethnicity, and art style, in addition to existing body type, height, and weight badges.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-visible-indicator-or-notice-that-the-app-supports-nsfw-content-generation-ensuring-users-understand-the-app-s-capabilities",
+      "title": "Add a visible indicator or notice that the app supports NSFW content generation, ensuring users understand the app's capabilities.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-negative-prompt-preset-selector-to-the-imagegenerationform-component-with-at-least-5-preset-options-e-g-low-quality-anatomical-issues-artifacts-default-safe-none-that-users-can-choose-from-a-dropdown",
+      "title": "Add a negative prompt preset selector to the ImageGenerationForm component with at least 5 preset options (e.g., 'Low Quality', 'Anatomical Issues', 'Artifacts', 'Default Safe', 'None') that users can choose from a dropdown",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-define-negative-prompt-preset-text-values-for-each-preset-option-that-contain-appropriate-stable-diffusion-negative-prompt-keywords-e-g-low-quality-preset-includes-keywords-like-low-quality-blurry-pixelated-distorted-anatomical-issues-includes-bad-anatomy-deformed-mutated-etc",
+      "title": "Define negative prompt preset text values for each preset option that contain appropriate Stable Diffusion negative prompt keywords (e.g., 'Low Quality' preset includes keywords like 'low quality, blurry, pixelated, distorted'; 'Anatomical Issues' includes 'bad anatomy, deformed, mutated'; etc.)",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-append-the-selected-negative-prompt-preset-text-to-the-generated-comprehensive-prompt-clearly-separating-it-from-the-positive-prompt-e-g-with-a-negative-prompt-prefix-or-similar-convention",
+      "title": "Update the prompt generation logic in App.tsx to append the selected negative prompt preset text to the generated comprehensive prompt, clearly separating it from the positive prompt (e.g., with a 'Negative prompt:' prefix or similar convention)",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-negative-prompt-preset-badge-to-the-imagedisplay-component-that-shows-the-selected-preset-name-alongside-the-existing-parameter-badges-body-type-height-weight-age-ethnicity-art-style",
+      "title": "Add a negative prompt preset badge to the ImageDisplay component that shows the selected preset name alongside the existing parameter badges (body type, height, weight, age, ethnicity, art style)",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usesendqueries-mutation-hook-to-include-the-negativeprompt-parameter-when-calling-the-backend-sendqueries-method",
+      "title": "Update the useSendQueries mutation hook to include the negativePrompt parameter when calling the backend sendQueries method",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-soft-belly-as-a-new-body-type-option-to-the-bodytype-dropdown-in-the-imagegenerationform-component-alongside-existing-options-skinny-curvy-oversized-plus-size-buxom-saggy",
+      "title": "Add 'soft belly' as a new body type option to the bodyType dropdown in the ImageGenerationForm component, alongside existing options (skinny, curvy, oversized, plus-size, buxom, saggy)",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-soft-belly-as-a-valid-body-type-descriptor-when-generating-the-comprehensive-prompt-text",
+      "title": "Update the prompt generation logic in App.tsx to include 'soft belly' as a valid body type descriptor when generating the comprehensive prompt text",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-aspect-ratio-selector-to-the-imagegenerationform-component-with-common-options-including-square-1-1-portrait-2-3-landscape-3-2-widescreen-16-9-ultra-wide-21-9-and-vertical-9-16",
+      "title": "Add an aspect ratio selector to the ImageGenerationForm component with common options including: Square (1:1), Portrait (2:3), Landscape (3:2), Widescreen (16:9), Ultra-wide (21:9), and Vertical (9:16)",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-generationparams-type-in-app-tsx-to-include-an-aspectratio-field-of-type-string-to-store-the-selected-aspect-ratio-option",
+      "title": "Update the GenerationParams type in App.tsx to include an aspectRatio field of type string to store the selected aspect ratio option",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-the-selected-aspect-ratio-in-the-comprehensive-prompt-text-formatting-it-as-a-descriptor-that-ai-image-generators-can-understand-e-g-aspect-ratio-16-9",
+      "title": "Update the prompt generation logic in App.tsx to include the selected aspect ratio in the comprehensive prompt text, formatting it as a descriptor that AI image generators can understand (e.g., 'aspect ratio: 16:9')",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-aspect-ratio-badge-to-the-imagedisplay-component-that-shows-the-selected-aspect-ratio-alongside-the-existing-parameter-badges-body-type-height-weight-age-ethnicity-art-style-negative-prompt-preset",
+      "title": "Add an aspect ratio badge to the ImageDisplay component that shows the selected aspect ratio alongside the existing parameter badges (body type, height, weight, age, ethnicity, art style, negative prompt preset)",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usesendqueries-mutation-hook-in-usequeries-ts-to-include-the-aspectratio-parameter-when-calling-the-backend-sendqueries-method",
+      "title": "Update the useSendQueries mutation hook in useQueries.ts to include the aspectRatio parameter when calling the backend sendQueries method",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-imagegenerationform-submission-flow-to-trigger-actual-stable-diffusion-image-generation-through-the-backend-replacing-the-current-prompt-display-with-real-image-generation",
+      "title": "Update the ImageGenerationForm submission flow to trigger actual Stable Diffusion image generation through the backend, replacing the current prompt display with real image generation",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-imagedisplay-component-to-show-the-actual-generated-image-from-stable-diffusion-instead-of-the-placeholder-sample-image-while-preserving-the-prompt-text-and-parameter-badges",
+      "title": "Update the ImageDisplay component to show the actual generated image from Stable Diffusion instead of the placeholder sample image, while preserving the prompt text and parameter badges",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-camera-lens-preset-selector-to-the-imagegenerationform-component-with-common-photography-lens-options-including-50mm-85mm-35mm-24mm-wide-angle-telephoto-and-macro",
+      "title": "Add a camera lens preset selector to the ImageGenerationForm component with common photography lens options including: 50mm, 85mm, 35mm, 24mm, Wide-angle, Telephoto, and Macro",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-generationparams-type-in-app-tsx-to-include-a-cameralens-field-of-type-string-to-store-the-selected-camera-lens-preset-option",
+      "title": "Update the GenerationParams type in App.tsx to include a cameraLens field of type string to store the selected camera lens preset option",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-the-selected-camera-lens-preset-in-the-comprehensive-prompt-text-formatting-it-as-a-photography-descriptor-that-ai-image-generators-can-understand-e-g-shot-with-85mm-lens-or-wide-angle-perspective",
+      "title": "Update the prompt generation logic in App.tsx to include the selected camera lens preset in the comprehensive prompt text, formatting it as a photography descriptor that AI image generators can understand (e.g., 'shot with 85mm lens' or 'wide-angle perspective')",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-camera-lens-preset-badge-to-the-imagedisplay-component-that-shows-the-selected-lens-preset-alongside-the-existing-parameter-badges-body-type-height-weight-age-ethnicity-art-style-negative-prompt-preset-aspect-ratio",
+      "title": "Add a camera lens preset badge to the ImageDisplay component that shows the selected lens preset alongside the existing parameter badges (body type, height, weight, age, ethnicity, art style, negative prompt preset, aspect ratio)",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usesendqueries-mutation-hook-in-usequeries-ts-to-include-the-cameralens-parameter-when-calling-the-backend-sendqueries-method",
+      "title": "Update the useSendQueries mutation hook in useQueries.ts to include the cameraLens parameter when calling the backend sendQueries method",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-save-preset-button-to-the-imagegenerationform-component-that-allows-users-to-save-their-current-parameter-configuration-body-type-height-weight-age-ethnicity-art-style-negative-prompt-preset-aspect-ratio-camera-lens-with-a-custom-preset-name",
+      "title": "Add a 'Save Preset' button to the ImageGenerationForm component that allows users to save their current parameter configuration (body type, height, weight, age, ethnicity, art style, negative prompt preset, aspect ratio, camera lens) with a custom preset name",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-usesavepreset-mutation-hook-in-usequeries-ts-that-calls-the-backend-savepreset-method-with-the-preset-name-and-parameters",
+      "title": "Create a useSavePreset mutation hook in useQueries.ts that calls the backend savePreset method with the preset name and parameters",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-usegetpresets-query-hook-in-usequeries-ts-that-fetches-all-saved-presets-from-the-backend",
+      "title": "Create a useGetPresets query hook in useQueries.ts that fetches all saved presets from the backend",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-preset-selector-dropdown-to-the-imagegenerationform-component-that-displays-all-saved-presets-and-allows-users-to-load-a-preset-by-clicking-on-it-which-populates-all-form-fields-with-the-preset-s-parameters",
+      "title": "Add a preset selector dropdown to the ImageGenerationForm component that displays all saved presets and allows users to load a preset by clicking on it, which populates all form fields with the preset's parameters",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-usegetprompthistory-query-hook-in-usequeries-ts-that-fetches-all-prompt-history-entries-from-the-backend",
+      "title": "Create a useGetPromptHistory query hook in useQueries.ts that fetches all prompt history entries from the backend",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-prompthistory-component-that-displays-a-list-of-all-previously-generated-prompts-with-their-timestamps-and-parameters-allowing-users-to-view-details-and-optionally-copy-prompts-to-clipboard",
+      "title": "Create a PromptHistory component that displays a list of all previously generated prompts with their timestamps and parameters, allowing users to view details and optionally copy prompts to clipboard",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-the-prompthistory-component-to-app-tsx-in-a-visible-location-either-as-a-sidebar-panel-collapsible-section-or-separate-tab-so-users-can-easily-access-their-prompt-history",
+      "title": "Add the PromptHistory component to App.tsx in a visible location, either as a sidebar panel, collapsible section, or separate tab, so users can easily access their prompt history",
+      "reqIds": [
+        "REQ-52"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-clothing-or-outfit-parameter-selector-to-the-imagegenerationform-component-with-at-least-the-form-fitting-dress-option-and-other-common-clothing-outfit-options-e-g-casual-wear-formal-attire-swimwear-lingerie-none-nude",
+      "title": "Add a 'clothing' or 'outfit' parameter selector to the ImageGenerationForm component with at least the 'form-fitting dress' option and other common clothing/outfit options (e.g., 'casual wear', 'formal attire', 'swimwear', 'lingerie', 'none/nude')",
+      "reqIds": [
+        "REQ-53"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-generationparams-type-in-app-tsx-to-include-a-clothing-field-of-type-string-to-store-the-selected-clothing-outfit-option",
+      "title": "Update the GenerationParams type in App.tsx to include a clothing field of type string to store the selected clothing/outfit option",
+      "reqIds": [
+        "REQ-54"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-the-selected-clothing-outfit-option-in-the-comprehensive-prompt-text-formatting-it-as-a-descriptor-that-ai-image-generators-can-understand-e-g-wearing-form-fitting-dress-or-dressed-in-form-fitting-dress",
+      "title": "Update the prompt generation logic in App.tsx to include the selected clothing/outfit option in the comprehensive prompt text, formatting it as a descriptor that AI image generators can understand (e.g., 'wearing form-fitting dress' or 'dressed in form-fitting dress')",
+      "reqIds": [
+        "REQ-55"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-clothing-badge-to-the-imagedisplay-component-that-shows-the-selected-clothing-outfit-option-alongside-the-existing-parameter-badges-body-type-height-weight-age-ethnicity-art-style-negative-prompt-preset-aspect-ratio-camera-lens",
+      "title": "Add a clothing badge to the ImageDisplay component that shows the selected clothing/outfit option alongside the existing parameter badges (body type, height, weight, age, ethnicity, art style, negative prompt preset, aspect ratio, camera lens)",
+      "reqIds": [
+        "REQ-56"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usesendqueries-mutation-hook-in-usequeries-ts-to-include-the-clothing-parameter-when-calling-the-backend-sendqueries-method",
+      "title": "Update the useSendQueries mutation hook in useQueries.ts to include the clothing parameter when calling the backend sendQueries method",
+      "reqIds": [
+        "REQ-59"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-preset-saving-and-loading-functionality-to-include-the-clothing-parameter-so-that-saved-presets-preserve-the-clothing-selection-and-loading-a-preset-restores-the-clothing-option",
+      "title": "Update the preset saving and loading functionality to include the clothing parameter so that saved presets preserve the clothing selection and loading a preset restores the clothing option",
+      "reqIds": [
+        "REQ-60"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-cartoon-as-a-new-art-style-option-to-the-artstyle-dropdown-in-the-imagegenerationform-component-alongside-existing-options-realistic-pencil-watercolors",
+      "title": "Add 'Cartoon' as a new art style option to the artStyle dropdown in the ImageGenerationForm component, alongside existing options (realistic, pencil, watercolors)",
+      "reqIds": [
+        "REQ-61"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-caricature-as-a-new-art-style-option-to-the-artstyle-dropdown-in-the-imagegenerationform-component-alongside-existing-options-realistic-pencil-watercolors-cartoon",
+      "title": "Add 'Caricature' as a new art style option to the artStyle dropdown in the ImageGenerationForm component, alongside existing options (realistic, pencil, watercolors, cartoon)",
+      "reqIds": [
+        "REQ-62"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-charcoal-as-a-new-art-style-option-to-the-artstyle-dropdown-in-the-imagegenerationform-component-alongside-existing-options-realistic-pencil-watercolors-cartoon-caricature",
+      "title": "Add 'Charcoal' as a new art style option to the artStyle dropdown in the ImageGenerationForm component, alongside existing options (realistic, pencil, watercolors, cartoon, caricature)",
+      "reqIds": [
+        "REQ-63"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-cartoon-caricature-and-charcoal-as-valid-art-style-descriptors-when-generating-the-comprehensive-prompt-text",
+      "title": "Update the prompt generation logic in App.tsx to include 'cartoon', 'caricature', and 'charcoal' as valid art style descriptors when generating the comprehensive prompt text",
+      "reqIds": [
+        "REQ-64"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-imagedisplay-component-to-correctly-display-art-style-badges-for-cartoon-caricature-and-charcoal-when-those-options-are-selected",
+      "title": "Update the ImageDisplay component to correctly display art style badges for 'Cartoon', 'Caricature', and 'Charcoal' when those options are selected",
+      "reqIds": [
+        "REQ-65"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usegenerateimage-mutation-hook-or-the-relevant-mutation-in-usequeries-ts-to-handle-the-new-backend-response-format-that-includes-actual-image-data-returned-from-the-stable-diffusion-api-and-surface-any-error-state-to-the-ui",
+      "title": "Update the useGenerateImage mutation hook (or the relevant mutation in useQueries.ts) to handle the new backend response format that includes actual image data returned from the Stable Diffusion API, and surface any error state to the UI.",
+      "reqIds": [
+        "REQ-67"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-imagedisplay-component-to-render-the-actual-image-returned-from-the-stable-diffusion-api-remove-or-hide-the-image-generation-is-currently-unavailable-notice-when-a-real-image-is-present-preserve-all-existing-parameter-badges-prompt-text-negative-prompt-display-and-copy-to-clipboard-functionality",
+      "title": "Update the ImageDisplay component to render the actual image returned from the Stable Diffusion API. Remove or hide the 'Image generation is currently unavailable' notice when a real image is present. Preserve all existing parameter badges, prompt text, negative prompt display, and copy-to-clipboard functionality.",
+      "reqIds": [
+        "REQ-68"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-situation-parameter-section-to-the-imagegenerationform-component-with-four-sub-selectors-pose-figuration-behavior-and-posing-each-sub-selector-is-a-dropdown-with-predefined-options-derived-from-the-frivolous-image-parameters-specification",
+      "title": "Add a 'Situation' parameter section to the ImageGenerationForm component with four sub-selectors: Pose, Figuration, Behavior, and Posing. Each sub-selector is a dropdown with predefined options derived from the frivolous image parameters specification.",
+      "reqIds": [
+        "REQ-69"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-generationparams-type-in-app-tsx-to-include-four-new-optional-fields-situationpose-situationfiguration-situationbehavior-and-situationposing-each-of-type-string-to-store-the-selected-situation-sub-options",
+      "title": "Update the GenerationParams type in App.tsx to include four new optional fields: situationPose, situationFiguration, situationBehavior, and situationPosing, each of type string, to store the selected Situation sub-options.",
+      "reqIds": [
+        "REQ-70"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-the-ai-keywords-for-each-selected-situation-sub-option-in-the-comprehensive-prompt-text-use-the-following-keyword-mappings-pose-the-reclining-odalisque-reclining-odalisque-sensual-posture-arched-back-relaxed-limbs-figuration-boudoir-setting-intimate-boudoir-disheveled-silk-sheets-dim-warm-lighting-veiled-background-behavior-the-gaze-sultry-gaze-bedroom-eyes-half-closed-eyelids-inviting-smile-posing-suggestive-reveal-shoulder-strap-slipping-strategic-placement-translucent-fabric-tousled-hair",
+      "title": "Update the prompt generation logic in App.tsx to include the AI keywords for each selected Situation sub-option in the comprehensive prompt text. Use the following keyword mappings: Pose 'The Reclining Odalisque' → 'reclining odalisque, sensual posture, arched back, relaxed limbs'; Figuration 'Boudoir-Setting' → 'intimate boudoir, disheveled silk sheets, dim warm lighting, veiled background'; Behavior 'The Gaze' → 'sultry gaze, bedroom eyes, half-closed eyelids, inviting smile'; Posing 'Suggestive Reveal' → 'shoulder strap slipping, strategic placement, translucent fabric, tousled hair'.",
+      "reqIds": [
+        "REQ-71"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-situation-parameter-badges-to-the-imagedisplay-component-that-show-each-selected-situation-sub-option-name-pose-figuration-behavior-posing-alongside-the-existing-parameter-badges-only-when-a-non-empty-value-is-selected",
+      "title": "Add Situation parameter badges to the ImageDisplay component that show each selected Situation sub-option name (Pose, Figuration, Behavior, Posing) alongside the existing parameter badges, only when a non-empty value is selected.",
+      "reqIds": [
+        "REQ-72"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usesendqueries-mutation-hook-in-usequeries-ts-to-include-the-four-new-situation-parameters-situationpose-situationfiguration-situationbehavior-situationposing-when-calling-the-backend-sendqueries-method-mapping-them-to-the-backend-posecriteria-format",
+      "title": "Update the useSendQueries mutation hook in useQueries.ts to include the four new Situation parameters (situationPose, situationFiguration, situationBehavior, situationPosing) when calling the backend sendQueries method, mapping them to the backend PoseCriteria format.",
+      "reqIds": [
+        "REQ-73"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-camera-angle-parameter-selector-to-the-imagegenerationform-component-with-the-following-options-low-angle-high-angle-from-behind-side-view-top-down-view-close-up-full-body",
+      "title": "Add a 'Camera Angle' parameter selector to the ImageGenerationForm component with the following options: Low Angle, High Angle, From Behind, Side View, Top-Down View, Close-Up, Full Body.",
+      "reqIds": [
+        "REQ-76"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-generationparams-type-in-app-tsx-to-include-a-cameraangle-field-of-type-string-to-store-the-selected-camera-angle-option",
+      "title": "Update the GenerationParams type in App.tsx to include a cameraAngle field of type string to store the selected camera angle option.",
+      "reqIds": [
+        "REQ-77"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-the-selected-camera-angle-in-the-comprehensive-prompt-text-formatted-as-a-photography-cinematography-descriptor-e-g-low-angle-shot-top-down-view",
+      "title": "Update the prompt generation logic in App.tsx to include the selected camera angle in the comprehensive prompt text, formatted as a photography/cinematography descriptor (e.g., 'low angle shot', 'top-down view').",
+      "reqIds": [
+        "REQ-78"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-camera-angle-badge-to-the-imagedisplay-component-that-shows-the-selected-camera-angle-alongside-the-existing-parameter-badges-only-when-a-non-empty-value-is-selected",
+      "title": "Add a camera angle badge to the ImageDisplay component that shows the selected camera angle alongside the existing parameter badges, only when a non-empty value is selected.",
+      "reqIds": [
+        "REQ-79"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-lighting-parameter-selector-to-the-imagegenerationform-component-with-the-following-options-dramatic-lighting-rim-lighting-soft-shadows-backlit-volumetric-light-dim-lighting-neon-lighting",
+      "title": "Add a 'Lighting' parameter selector to the ImageGenerationForm component with the following options: Dramatic Lighting, Rim Lighting, Soft Shadows, Backlit, Volumetric Light, Dim Lighting, Neon Lighting.",
+      "reqIds": [
+        "REQ-80"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-generationparams-type-in-app-tsx-to-include-a-lighting-field-of-type-string-to-store-the-selected-lighting-option",
+      "title": "Update the GenerationParams type in App.tsx to include a lighting field of type string to store the selected lighting option.",
+      "reqIds": [
+        "REQ-81"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-the-selected-lighting-option-in-the-comprehensive-prompt-text-e-g-dramatic-lighting-neon-lighting",
+      "title": "Update the prompt generation logic in App.tsx to include the selected lighting option in the comprehensive prompt text (e.g., 'dramatic lighting', 'neon lighting').",
+      "reqIds": [
+        "REQ-82"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-lighting-badge-to-the-imagedisplay-component-that-shows-the-selected-lighting-option-alongside-the-existing-parameter-badges-only-when-a-non-empty-value-is-selected",
+      "title": "Add a lighting badge to the ImageDisplay component that shows the selected lighting option alongside the existing parameter badges, only when a non-empty value is selected.",
+      "reqIds": [
+        "REQ-83"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-environment-parameter-selector-to-the-imagegenerationform-component-with-the-following-options-bedroom-shower-balcony-forest-studio-night-city-rooftop",
+      "title": "Add an 'Environment' parameter selector to the ImageGenerationForm component with the following options: Bedroom, Shower, Balcony, Forest, Studio, Night City, Rooftop.",
+      "reqIds": [
+        "REQ-84"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-generationparams-type-in-app-tsx-to-include-an-environment-field-of-type-string-to-store-the-selected-environment-option",
+      "title": "Update the GenerationParams type in App.tsx to include an environment field of type string to store the selected environment option.",
+      "reqIds": [
+        "REQ-85"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-the-selected-environment-in-the-comprehensive-prompt-text-e-g-in-a-bedroom-rooftop-setting",
+      "title": "Update the prompt generation logic in App.tsx to include the selected environment in the comprehensive prompt text (e.g., 'in a bedroom', 'rooftop setting').",
+      "reqIds": [
+        "REQ-86"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-environment-badge-to-the-imagedisplay-component-that-shows-the-selected-environment-alongside-the-existing-parameter-badges-only-when-a-non-empty-value-is-selected",
+      "title": "Add an environment badge to the ImageDisplay component that shows the selected environment alongside the existing parameter badges, only when a non-empty value is selected.",
+      "reqIds": [
+        "REQ-87"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-composition-parameter-selector-to-the-imagegenerationform-component-with-the-following-options-rule-of-thirds-centered-sensual-intimate-dynamic-artistic-intricate-details",
+      "title": "Add a 'Composition' parameter selector to the ImageGenerationForm component with the following options: Rule of Thirds, Centered, Sensual, Intimate, Dynamic, Artistic, Intricate Details.",
+      "reqIds": [
+        "REQ-88"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-generationparams-type-in-app-tsx-to-include-a-composition-field-of-type-string-to-store-the-selected-composition-option",
+      "title": "Update the GenerationParams type in App.tsx to include a composition field of type string to store the selected composition option.",
+      "reqIds": [
+        "REQ-89"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-prompt-generation-logic-in-app-tsx-to-include-the-selected-composition-option-in-the-comprehensive-prompt-text-e-g-rule-of-thirds-composition-dynamic-composition",
+      "title": "Update the prompt generation logic in App.tsx to include the selected composition option in the comprehensive prompt text (e.g., 'rule of thirds composition', 'dynamic composition').",
+      "reqIds": [
+        "REQ-90"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-composition-badge-to-the-imagedisplay-component-that-shows-the-selected-composition-option-alongside-the-existing-parameter-badges-only-when-a-non-empty-value-is-selected",
+      "title": "Add a composition badge to the ImageDisplay component that shows the selected composition option alongside the existing parameter badges, only when a non-empty value is selected.",
+      "reqIds": [
+        "REQ-91"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usesendqueries-mutation-hook-in-usequeries-ts-to-include-the-four-new-image-composition-parameters-cameraangle-lighting-environment-composition-when-calling-the-backend-sendqueries-method-mapping-them-to-the-backend-posecriteria-format",
+      "title": "Update the useSendQueries mutation hook in useQueries.ts to include the four new image composition parameters (cameraAngle, lighting, environment, composition) when calling the backend sendQueries method, mapping them to the backend PoseCriteria format.",
+      "reqIds": [
+        "REQ-92"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-expand-the-negative-prompt-presets-in-frontend-src-constants-negativeprompts-ts-to-include-a-comprehensive-preset-that-covers-all-the-following-keywords-bad-anatomy-extra-limbs-disfigured-deformed-blurry-low-quality-watermark-text-bad-hands-this-should-be-available-as-a-selectable-preset-option-e-g-comprehensive-in-addition-to-the-existing-presets",
+      "title": "Expand the negative prompt presets in frontend/src/constants/negativePrompts.ts to include a comprehensive preset that covers all the following keywords: bad anatomy, extra limbs, disfigured, deformed, blurry, low quality, watermark, text, bad hands. This should be available as a selectable preset option (e.g., 'Comprehensive') in addition to the existing presets.",
+      "reqIds": [
+        "REQ-95"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-preset-saving-and-loading-functionality-imagegenerationform-and-usequeries-ts-to-include-the-four-new-image-composition-parameters-cameraangle-lighting-environment-composition-so-that-saved-presets-preserve-and-restore-these-selections",
+      "title": "Update the preset saving and loading functionality (ImageGenerationForm and useQueries.ts) to include the four new image composition parameters (cameraAngle, lighting, environment, composition) so that saved presets preserve and restore these selections.",
+      "reqIds": [
+        "REQ-96"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Input form for multiple detail keywords (body type, height, weight, etc.)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "AI image generation based on input keywords",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Display generated images to user",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Store user-submitted keyword combinations (body type, height, weight) in the backend",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add extensive body type options: oversized, plus-size, curvy, buxom, saggy",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Add age parameter options including mature age",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add ethnicity selection parameter",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Add art style selection: realistic, pencil, watercolors",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Support NSFW content generation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Generate prompts for AI image generation based on all selected parameters",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Update the backend main actor to accept and store all new parameters: body type (expanded options), age, ethnicity, and art style in addition to existing height and weight fields.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Add Stable Diffusion negative prompt presets",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Update the PoseCriteria type in backend/main.mo to include a negativePrompt field of type Text to store the selected negative prompt preset text",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Create a migration.mo file to handle upgrading existing PoseCriteria records to include the new negativePrompt field with a default empty string value for backward compatibility",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Add 'soft belly' as a body type parameter option",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Update the ImageDisplay component to correctly display the 'soft belly' body type badge when that option is selected",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Add aspect ratio selector to the image generation form",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-34",
+      "summary": "Update the PoseCriteria type in backend/main.mo to include an aspectRatio field of type Text to store the selected aspect ratio value",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-36",
+      "summary": "Create a migration.mo file to handle upgrading existing PoseCriteria records to include the new aspectRatio field with a default empty string value for backward compatibility",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-37",
+      "summary": "Integrate Stable Diffusion API for actual image generation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "Add a Stable Diffusion API integration to the backend that accepts the comprehensive prompt (positive and negative) along with aspect ratio parameters and returns generated image data",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-39",
+      "summary": "Add camera lens preset selector with common options (e.g., 50mm, 85mm, wide-angle, telephoto, macro)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-44",
+      "summary": "Update the PoseCriteria type in backend/main.mo to include a cameraLens field of type Text to store the selected camera lens preset value",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-45",
+      "summary": "Update the migration.mo file to handle upgrading existing PoseCriteria records to include the new cameraLens field with a default empty string value for backward compatibility",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-46",
+      "summary": "Add save preset feature to store user's selected parameter combinations",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-47",
+      "summary": "Add history of generated prompts to view previously created prompts",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-49",
+      "summary": "Create a Preset type in the backend that stores a preset name and all generation parameters (bodyType, height, weight, age, ethnicity, artStyle, negativePrompt, aspectRatio, cameraLens)",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-50",
+      "summary": "Add a savePreset method to the backend main actor that accepts a preset name and generation parameters, stores the preset in a stable data structure, and returns a success confirmation",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-51",
+      "summary": "Add a getPresets method to the backend main actor that returns all saved presets for the current user or all presets if no user authentication is required",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-55",
+      "summary": "Add a PromptHistory type to the backend that stores generated prompt text, timestamp, and all associated generation parameters",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-56",
+      "summary": "Update the existing sendQueries or generateImage backend method to automatically save each generated prompt to the history with a timestamp",
+      "reqIds": [
+        "REQ-48"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-57",
+      "summary": "Add a getPromptHistory method to the backend main actor that returns all saved prompt history entries, ordered by most recent first",
+      "reqIds": [
+        "REQ-49"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-58",
+      "summary": "Add clothing/outfit parameter with options like form-fitting dress",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-63",
+      "summary": "Update the PoseCriteria type in backend/main.mo to include a clothing field of type Text to store the selected clothing/outfit value",
+      "reqIds": [
+        "REQ-57"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-64",
+      "summary": "Update the migration.mo file to handle upgrading existing PoseCriteria records to include the new clothing field with a default empty string value for backward compatibility",
+      "reqIds": [
+        "REQ-58"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-65",
+      "summary": "Add cartoon art style option to the art style selector",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-66",
+      "summary": "Add caricature art style option to the art style selector",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-67",
+      "summary": "Add cole/coal art style option to the art style selector",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-68",
+      "summary": "Implement Stable Diffusion API integration in the backend main actor (backend/main.mo). The generateImage function must perform an HTTPS outcall to a Stable Diffusion API endpoint, passing the positive prompt, negative prompt, and aspect ratio parameters. The function must return the generated image as binary data (Blob) or a URL/base64-encoded string that the frontend can render as an image.",
+      "reqIds": [
+        "REQ-66"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-69",
+      "summary": "Add a 'Situation' menu/section with frivolous image parameters including sub-categories: Pose (The Reclining Odalisque), Figuration (Boudoir-Setting), Behavior/Verhalten (The Gaze), and Posing (Suggestive Reveal) — each with descriptive AI keywords that get included in the generated prompt",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-75",
+      "summary": "Update the PoseCriteria type in backend/main.mo to include four new Text fields: situationPose, situationFiguration, situationBehavior, and situationPosing to store the selected Situation sub-option values.",
+      "reqIds": [
+        "REQ-74"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-76",
+      "summary": "Create or update migration.mo to handle upgrading existing PoseCriteria records to include the four new Situation fields (situationPose, situationFiguration, situationBehavior, situationPosing) with default empty string values for backward compatibility.",
+      "reqIds": [
+        "REQ-75"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-77",
+      "summary": "Add camera angles selector with options: low angle, high angle, from behind, side view, top-down view, close-up, full body",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-78",
+      "summary": "Add lighting selector with options: dramatic lighting, rim lighting, soft shadows, backlit, volumetric light, dim lighting, neon lighting",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-79",
+      "summary": "Add environment/background selector with options: bedroom, shower, balcony, forest, studio, night city, rooftop",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-80",
+      "summary": "Add composition selector with options: rule of thirds, centered, sensual, intimate, dynamic, artistic, intricate details",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-81",
+      "summary": "Expand negative prompt presets to include additional keywords: bad anatomy, extra limbs, disfigured, deformed, blurry, low quality, watermark, text, bad hands",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-99",
+      "summary": "Update the PoseCriteria type in backend/main.mo to include four new Text fields: cameraAngle, lighting, environment, and composition to store the selected image composition values.",
+      "reqIds": [
+        "REQ-93"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-100",
+      "summary": "Update migration.mo to handle upgrading existing PoseCriteria records to include the four new image composition fields (cameraAngle, lighting, environment, composition) with default empty string values for backward compatibility.",
+      "reqIds": [
+        "REQ-94"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "AI Image Studio",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

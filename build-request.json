@@ -1,0 +1,389 @@
+{
+  "kind": "build_request",
+  "title": "Add camera angles, lighting, environment, composition selectors and expand negative prompt presets",
+  "projectName": "AI Image Studio",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-76",
+      "text": "Add a 'Camera Angle' parameter selector to the ImageGenerationForm component with the following options: Low Angle, High Angle, From Behind, Side View, Top-Down View, Close-Up, Full Body.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "camera_angles: low angle, high angle, from behind, side view, top-down view, close-up, full body"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A dropdown labeled 'Camera Angle' appears in the form with all 7 options listed.",
+        "The selected value is stored in form state.",
+        "Selecting an option does not break existing form functionality."
+      ]
+    },
+    {
+      "id": "REQ-77",
+      "text": "Update the GenerationParams type in App.tsx to include a cameraAngle field of type string to store the selected camera angle option.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "camera_angles"
+        ]
+      },
+      "acceptanceCriteria": [
+        "GenerationParams type has a cameraAngle field of type string.",
+        "The field is properly initialized with a default empty string or first option value."
+      ]
+    },
+    {
+      "id": "REQ-78",
+      "text": "Update the prompt generation logic in App.tsx to include the selected camera angle in the comprehensive prompt text, formatted as a photography/cinematography descriptor (e.g., 'low angle shot', 'top-down view').",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "camera_angles"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When a camera angle is selected, the generated prompt includes the angle descriptor.",
+        "When no camera angle is selected, the prompt is unaffected."
+      ]
+    },
+    {
+      "id": "REQ-79",
+      "text": "Add a camera angle badge to the ImageDisplay component that shows the selected camera angle alongside the existing parameter badges, only when a non-empty value is selected.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "camera_angles"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A 'Camera Angle' badge appears in ImageDisplay when a value is set.",
+        "No badge is shown when the field is empty.",
+        "Existing badges are unaffected."
+      ]
+    },
+    {
+      "id": "REQ-80",
+      "text": "Add a 'Lighting' parameter selector to the ImageGenerationForm component with the following options: Dramatic Lighting, Rim Lighting, Soft Shadows, Backlit, Volumetric Light, Dim Lighting, Neon Lighting.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "lighting: dramatic lighting, rim lighting, soft shadows, backlit, volumetric light, dim lighting, neon lighting"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A dropdown labeled 'Lighting' appears in the form with all 7 options listed.",
+        "The selected value is stored in form state.",
+        "Selecting an option does not break existing form functionality."
+      ]
+    },
+    {
+      "id": "REQ-81",
+      "text": "Update the GenerationParams type in App.tsx to include a lighting field of type string to store the selected lighting option.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "lighting"
+        ]
+      },
+      "acceptanceCriteria": [
+        "GenerationParams type has a lighting field of type string.",
+        "The field is properly initialized."
+      ]
+    },
+    {
+      "id": "REQ-82",
+      "text": "Update the prompt generation logic in App.tsx to include the selected lighting option in the comprehensive prompt text (e.g., 'dramatic lighting', 'neon lighting').",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "lighting"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When a lighting option is selected, the generated prompt includes the lighting descriptor.",
+        "When no lighting is selected, the prompt is unaffected."
+      ]
+    },
+    {
+      "id": "REQ-83",
+      "text": "Add a lighting badge to the ImageDisplay component that shows the selected lighting option alongside the existing parameter badges, only when a non-empty value is selected.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "lighting"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A 'Lighting' badge appears in ImageDisplay when a value is set.",
+        "No badge is shown when the field is empty."
+      ]
+    },
+    {
+      "id": "REQ-84",
+      "text": "Add an 'Environment' parameter selector to the ImageGenerationForm component with the following options: Bedroom, Shower, Balcony, Forest, Studio, Night City, Rooftop.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "environment: bedroom, shower, balcony, forest, studio, night city, rooftop"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A dropdown labeled 'Environment' appears in the form with all 7 options listed.",
+        "The selected value is stored in form state.",
+        "Selecting an option does not break existing form functionality."
+      ]
+    },
+    {
+      "id": "REQ-85",
+      "text": "Update the GenerationParams type in App.tsx to include an environment field of type string to store the selected environment option.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "environment"
+        ]
+      },
+      "acceptanceCriteria": [
+        "GenerationParams type has an environment field of type string.",
+        "The field is properly initialized."
+      ]
+    },
+    {
+      "id": "REQ-86",
+      "text": "Update the prompt generation logic in App.tsx to include the selected environment in the comprehensive prompt text (e.g., 'in a bedroom', 'rooftop setting').",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "environment"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When an environment is selected, the generated prompt includes the environment descriptor.",
+        "When no environment is selected, the prompt is unaffected."
+      ]
+    },
+    {
+      "id": "REQ-87",
+      "text": "Add an environment badge to the ImageDisplay component that shows the selected environment alongside the existing parameter badges, only when a non-empty value is selected.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "environment"
+        ]
+      },
+      "acceptanceCriteria": [
+        "An 'Environment' badge appears in ImageDisplay when a value is set.",
+        "No badge is shown when the field is empty."
+      ]
+    },
+    {
+      "id": "REQ-88",
+      "text": "Add a 'Composition' parameter selector to the ImageGenerationForm component with the following options: Rule of Thirds, Centered, Sensual, Intimate, Dynamic, Artistic, Intricate Details.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "composition: rule of thirds, centered, sensual, intimate, dynamic, artistic, intricate details"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A dropdown labeled 'Composition' appears in the form with all 7 options listed.",
+        "The selected value is stored in form state.",
+        "Selecting an option does not break existing form functionality."
+      ]
+    },
+    {
+      "id": "REQ-89",
+      "text": "Update the GenerationParams type in App.tsx to include a composition field of type string to store the selected composition option.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "composition"
+        ]
+      },
+      "acceptanceCriteria": [
+        "GenerationParams type has a composition field of type string.",
+        "The field is properly initialized."
+      ]
+    },
+    {
+      "id": "REQ-90",
+      "text": "Update the prompt generation logic in App.tsx to include the selected composition option in the comprehensive prompt text (e.g., 'rule of thirds composition', 'dynamic composition').",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "composition"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When a composition option is selected, the generated prompt includes the composition descriptor.",
+        "When no composition is selected, the prompt is unaffected."
+      ]
+    },
+    {
+      "id": "REQ-91",
+      "text": "Add a composition badge to the ImageDisplay component that shows the selected composition option alongside the existing parameter badges, only when a non-empty value is selected.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "composition"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A 'Composition' badge appears in ImageDisplay when a value is set.",
+        "No badge is shown when the field is empty."
+      ]
+    },
+    {
+      "id": "REQ-92",
+      "text": "Update the useSendQueries mutation hook in useQueries.ts to include the four new image composition parameters (cameraAngle, lighting, environment, composition) when calling the backend sendQueries method, mapping them to the backend PoseCriteria format.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "bildgestaltung_keywords"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The mutation passes cameraAngle, lighting, environment, and composition fields to the backend.",
+        "Existing parameters are not affected."
+      ]
+    },
+    {
+      "id": "REQ-93",
+      "text": "Update the PoseCriteria type in backend/main.mo to include four new Text fields: cameraAngle, lighting, environment, and composition to store the selected image composition values.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "bildgestaltung_keywords"
+        ]
+      },
+      "acceptanceCriteria": [
+        "PoseCriteria has cameraAngle, lighting, environment, and composition fields of type Text.",
+        "Backend compiles without errors.",
+        "Existing fields are preserved."
+      ]
+    },
+    {
+      "id": "REQ-94",
+      "text": "Update migration.mo to handle upgrading existing PoseCriteria records to include the four new image composition fields (cameraAngle, lighting, environment, composition) with default empty string values for backward compatibility.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "bildgestaltung_keywords"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Existing presets and prompt history records are migrated without data loss.",
+        "New fields default to empty strings on migration.",
+        "Migration compiles and runs without errors."
+      ]
+    },
+    {
+      "id": "REQ-95",
+      "text": "Expand the negative prompt presets in frontend/src/constants/negativePrompts.ts to include a comprehensive preset that covers all the following keywords: bad anatomy, extra limbs, disfigured, deformed, blurry, low quality, watermark, text, bad hands. This should be available as a selectable preset option (e.g., 'Comprehensive') in addition to the existing presets.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "negative_prompts: bad anatomy, extra limbs, disfigured, deformed, blurry, low quality, watermark, text, clothed, bad hands"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A new 'Comprehensive' preset option appears in the negative prompt dropdown.",
+        "The preset text contains: bad anatomy, extra limbs, disfigured, deformed, blurry, low quality, watermark, text, bad hands.",
+        "All existing preset options remain unchanged."
+      ]
+    },
+    {
+      "id": "REQ-96",
+      "text": "Update the preset saving and loading functionality (ImageGenerationForm and useQueries.ts) to include the four new image composition parameters (cameraAngle, lighting, environment, composition) so that saved presets preserve and restore these selections.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "bildgestaltung_keywords"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Saving a preset captures the cameraAngle, lighting, environment, and composition values.",
+        "Loading a preset restores all four fields in the form.",
+        "Existing preset save/load behavior is not broken."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not add explicit sexual poses, body-part focus imagery, or couple poses (missionary, doggy style, spread legs, etc.) — these were explicitly rejected.",
+    "Do not modify files in frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui.",
+    "All Motoko logic must remain in the single main actor file (backend/main.mo)."
+  ],
+  "nonGoals": [
+    "Adding explicit sexual poses or NSFW body-part-focused options (e.g., 'spread legs', 'hand on breast', 'missionary position').",
+    "Adding couple/group pose options.",
+    "Real-time image generation or WebSocket-based updates.",
+    "External authentication providers other than Internet Identity."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

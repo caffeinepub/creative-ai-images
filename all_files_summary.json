@@ -1,0 +1,22 @@
+{
+  "backend/main.mo": "Main Motoko actor defining PoseCriteria, Preset, and PromptHistory types, with endpoints to send queries, save presets, and retrieve prompt history, using HTTP outcalls and migration support.",
+  "backend/migration.mo": "Migration module that upgrades stored actor state from OldPoseCriteria (14 fields) to NewPoseCriteria (18 fields) by adding cameraAngle, lighting, environment, and composition with empty string defaults.",
+  "feature_evidence.json": "Feature evidence report mapping implemented features (camera angle, lighting, environment, composition selectors and related type/prompt/badge updates) to their source files and test IDs with confidence ratings.",
+  "frontend-file-summaries.txt": "JSON document providing one-sentence summaries of each frontend source file, describing the purpose and recent changes for each component, hook, and config file.",
+  "frontend/index.css": "Tailwind CSS entry file defining OKLCH-based CSS custom properties for light and dark themes covering background, foreground, primary, chart, and sidebar color tokens.",
+  "frontend/index.html": "Minimal HTML shell for the React app titled 'AI Image Studio' that mounts the app into a root div and loads the main TypeScript module.",
+  "frontend/src/App.tsx": "Root React component defining the GenerationParams type (including cameraAngle, lighting, environment, composition), prompt generation logic, and layout wiring together the form, image display, and prompt history sheet.",
+  "frontend/src/components/Footer.tsx": "Footer component displaying copyright year and a 'Built with caffeine.ai' attribution link with UTM tracking based on the current hostname.",
+  "frontend/src/components/Header.tsx": "Sticky header component showing the app logo, gradient title 'AI Image Prompt Generator', and an NSFW Supported badge.",
+  "frontend/src/components/ImageDisplay.tsx": "Displays the AI-generated image alongside its generation parameters (body type, art style, aspect ratio, etc.) with a copy-to-clipboard button for the full prompt including negative prompt presets.",
+  "frontend/src/components/ImageGenerationForm.tsx": "Form component that collects all image generation parameters (body, situation, camera, composition) and triggers image generation or preset saving via backend mutations.",
+  "frontend/src/components/PromptHistory.tsx": "Displays a scrollable, collapsible list of previously generated prompts fetched from the backend, with timestamps and copy-to-clipboard functionality.",
+  "frontend/src/constants/negativePrompts.ts": "Defines a set of named negative prompt presets for Stable Diffusion (e.g., Low Quality, Anatomical Issues) and exports their keys as a TypeScript type and ordered array.",
+  "frontend/src/hooks/useActor.ts": "Custom hook that creates and caches an ICP backend actor (authenticated or anonymous) using React Query, and invalidates dependent queries when the identity changes.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides an Internet Identity authentication context and hook, managing AuthClient creation, login/logout flow, and persisting identity across page reloads.",
+  "frontend/src/hooks/useQueries.ts": "Defines React Query mutations and queries for backend interactions including image generation, sending pose queries, saving/loading presets, and fetching prompt history.",
+  "frontend/src/index.css": "Global CSS file that sets up Tailwind base/components/utilities and defines light/dark theme CSS custom properties (OKLCH color tokens, radius, sidebar, chart colors) plus fade-in and slide-in animation utilities.",
+  "frontend/src/main.tsx": "React app entry point that mounts the root component wrapped with TanStack QueryClientProvider and a custom InternetIdentityProvider for authentication context.",
+  "frontend/tailwind.config.js": "Tailwind CSS configuration extending the default theme with OKLCH-based semantic color tokens, custom border radii, Inter font family, accordion keyframe animations, and plugins for typography, container queries, and animate.",
+  "project_state.json": "Project state manifest (version 27) describing an AI image prompt generator app with NSFW support, tracking existing features, architectural notes, and known issues such as the unimplemented Stable Diffusion backend integration."
+}
