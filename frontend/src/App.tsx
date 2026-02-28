@@ -1,33 +1,18 @@
-import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import ImageGenerationForm from "./components/ImageGenerationForm";
-import { ImageDisplay } from "./components/ImageDisplay";
-import PromptHistory from "./components/PromptHistory";
-import { useGenerateImage, useSendQueries } from "./hooks/useQueries";
-import type { PoseCriteria } from "./backend";
-import { Sparkles } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ImageGenerationForm from "@/components/ImageGenerationForm";
+import { ImageDisplay } from "@/components/ImageDisplay";
+import PromptHistory from "@/components/PromptHistory";
+import { useGenerateImage } from "@/hooks/useQueries";
+import { useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import type { NegativePromptPreset } from "./constants/negativePrompts";
+import { Sparkles } from "lucide-react";
 
 const queryClient = new QueryClient();
 
-// Exported so ImageGenerationForm can import it
-export type GenerationParams = {
-  artStyle: "realistic" | "pencil" | "watercolors" | "cartoon" | "caricature" | "charcoal" | "";
-  negativePromptPreset: NegativePromptPreset | "";
-  aspectRatio: "1:1" | "2:3" | "3:2" | "16:9" | "21:9" | "9:16" | "";
-  cameraAngle: string;
-  lighting: string;
-  environment: string;
-  composition: string;
-  situationBehavior: string;
-};
-
 export interface OnGeneratePayload {
-  criteria: PoseCriteria;
   positivePrompt: string;
   negativePrompt: string;
   aspectRatio: string;
@@ -38,28 +23,16 @@ export interface OnGeneratePayload {
 }
 
 function AppContent() {
-  const generateImageMutation = useGenerateImage();
-  const sendQueriesMutation = useSendQueries();
+  const [generationResult, setGenerationResult] = useState<{
+    imageUrl?: string | null;
+    error?: string | null;
+  }>({});
 
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
-  const [generationError, setGenerationError] = useState<string | null>(null);
-  const [lastPrompt, setLastPrompt] = useState<string>("");
-  const [lastModel, setLastModel] = useState<string>("");
-  const [lastAspectRatio, setLastAspectRatio] = useState<string>("");
+  const generateImageMutation = useGenerateImage();
 
   const handleGenerate = async (payload: OnGeneratePayload) => {
-    setGeneratedImageUrl(null);
-    setGenerationError(null);
-    setLastPrompt(payload.positivePrompt);
-    setLastModel(payload.model);
-    setLastAspectRatio(payload.aspectRatio);
-
+    setGenerationResult({});
     try {
-      await sendQueriesMutation.mutateAsync({
-        criteria: payload.criteria,
-        combinations: payload.positivePrompt,
-      });
-
       const result = await generateImageMutation.mutateAsync({
         positivePrompt: payload.positivePrompt,
         negativePrompt: payload.negativePrompt,
@@ -69,77 +42,63 @@ function AppContent() {
         model: payload.model,
         apiToken: payload.apiToken,
       });
-
-      if (result.imageUrl) {
-        setGeneratedImageUrl(result.imageUrl);
-        setGenerationError(null);
-      } else {
-        setGeneratedImageUrl(null);
-        setGenerationError(result.error || "Image generation failed with an unknown error.");
-      }
-    } catch (err: unknown) {
-      setGeneratedImageUrl(null);
-      const message = err instanceof Error ? err.message : String(err);
-      setGenerationError(message || "An unexpected error occurred during image generation.");
+      setGenerationResult({ imageUrl: result.imageUrl, error: result.error });
+    } catch (err) {
+      setGenerationResult({ error: String(err) });
     }
   };
 
-  const isGenerating = generateImageMutation.isPending || sendQueriesMutation.isPending;
-
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      <div className="min-h-screen flex flex-col bg-background text-foreground">
-        <Header />
-
-        <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
-          {/* Hero section */}
-          <section className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-4">
-              <Sparkles className="h-4 w-4" />
-              AI-Powered Image Generation
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              AI Image Studio
-            </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Create stunning AI-generated images with detailed prompt control — powered by Hugging Face
-            </p>
-          </section>
-
-          {/* Main content grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <section>
-              <ImageGenerationForm onGenerate={handleGenerate} isGenerating={isGenerating} />
-            </section>
-
-            <section className="flex flex-col gap-6">
-              <ImageDisplay
-                imageUrl={generatedImageUrl}
-                isLoading={isGenerating}
-                error={generationError}
-                prompt={lastPrompt}
-                model={lastModel}
-                aspectRatio={lastAspectRatio}
-              />
-            </section>
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <Header />
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
+        {/* Hero */}
+        <section className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-4">
+            <Sparkles className="h-4 w-4" />
+            AI-Powered Image Generation
           </div>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            AI Image Studio
+          </h1>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Create stunning AI-generated images with detailed prompt control — powered by Hugging Face
+          </p>
+        </section>
 
-          <section className="mt-10">
+        {/* Main grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6 items-start">
+          {/* Left panel — no overflow:hidden, no transforms to avoid stacking context issues with dropdowns */}
+          <aside className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:overflow-x-visible pr-1">
+            <ImageGenerationForm
+              onGenerate={handleGenerate}
+              isGenerating={generateImageMutation.isPending}
+            />
+          </aside>
+
+          {/* Right panel */}
+          <section className="space-y-6">
+            <ImageDisplay
+              imageUrl={generationResult.imageUrl ?? null}
+              isLoading={generateImageMutation.isPending}
+              error={generationResult.error ?? null}
+            />
             <PromptHistory />
           </section>
-        </main>
-
-        <Footer />
-        <Toaster />
-      </div>
-    </ThemeProvider>
+        </div>
+      </main>
+      <Footer />
+      <Toaster />
+    </div>
   );
 }
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <AppContent />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

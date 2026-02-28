@@ -1,93 +1,27 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Redeploy AI Image Studio Frontend",
+  "title": "Fix primary navigation dropdown overlap issue",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Redeploy the full AI Image Studio frontend in its current state, ensuring the React frontend with image generation form, display, and prompt history are all fully functional",
+      "summary": "Fix dropdown overlap in primary navigation by implementing proper stacking context with absolute positioning and z-index",
       "acceptanceCriteria": [
-        "The app loads without errors in the browser",
-        "The image generation form renders correctly with all fields (art style, emotion, lighting, pose, etc.)",
-        "The backend responds to image generation requests",
-        "Prompt history displays previously generated prompts",
-        "No 'Not Found' or deployment errors appear"
+        "Opening the first dropdown in the primary navigation does not shift, overlap, or obscure any other navigation headings or dropdowns.",
+        "The dropdown panel floats above page content via absolute positioning and a high z-index.",
+        "All items in the open dropdown list are fully readable without clipping or overflow into sibling nav elements.",
+        "Closing the dropdown restores the navigation bar to its original layout with no residual overlap."
       ],
       "file_operations": [
         {
-          "path": "frontend/index.html",
-          "operation": "modify",
-          "description": "Verify the HTML entry point is correctly configured with the #root mount point and main.tsx module reference to ensure the React app loads properly"
-        },
-        {
-          "path": "frontend/src/main.tsx",
-          "operation": "modify",
-          "description": "Verify the React app entry point correctly wraps App with QueryClientProvider and InternetIdentityProvider, ensuring all context providers are properly initialized for the redeploy"
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Verify the root component correctly wires together ImageGenerationForm, ImageDisplay, and PromptHistory components with proper state management using useGenerateImage and useSendQueries hooks"
-        },
-        {
           "path": "frontend/src/components/Header.tsx",
           "operation": "modify",
-          "description": "Verify the sticky header displays the AI Image Studio logo, title with gradient styling, and 'Powered by Hugging Face' subtitle correctly"
-        },
-        {
-          "path": "frontend/src/components/ImageGenerationForm.tsx",
-          "operation": "modify",
-          "description": "Verify the form component renders all image generation parameters (art style, emotion, lighting, pose, etc.) with preset save/load functionality and API token dialog working correctly"
-        },
-        {
-          "path": "frontend/src/components/ImageDisplay.tsx",
-          "operation": "modify",
-          "description": "Verify the image display component correctly shows generated images, loading spinner, or user-friendly error messages mapped from backend error codes (HF_EMPTY_RESPONSE, 401, 503) with retry hints"
-        },
-        {
-          "path": "frontend/src/components/PromptHistory.tsx",
-          "operation": "modify",
-          "description": "Verify the collapsible prompt history card fetches and displays generation history sorted by timestamp with copy-to-clipboard functionality working correctly"
-        },
-        {
-          "path": "frontend/src/components/Footer.tsx",
-          "operation": "modify",
-          "description": "Verify the footer displays copyright year and caffeine.ai attribution link with UTM tracking parameters correctly"
-        },
-        {
-          "path": "frontend/src/hooks/useActor.ts",
-          "operation": "modify",
-          "description": "Verify the backend actor hook correctly creates and caches the ICP backend actor using Internet Identity and invalidates dependent queries on actor changes"
-        },
-        {
-          "path": "frontend/src/hooks/useInternetIdentity.ts",
-          "operation": "modify",
-          "description": "Verify the Internet Identity provider and hook correctly manage DFINITY AuthClient login, logout, and identity state across the app"
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Verify React Query hooks for image generation, prompt history, and presets work correctly with response-parsing utilities that normalize backend and Hugging Face API errors"
+          "description": "Update the navigation structure to ensure dropdown menus use absolute positioning with a high z-index (e.g., z-50 or higher) and proper overflow handling. Ensure the parent nav container has position: relative and overflow: visible to allow dropdowns to float above sibling elements. Add proper stacking context to prevent dropdown list items from overlapping adjacent dropdown triggers or headings."
         },
         {
           "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Verify the global CSS file preserves the charcoal+amber studio theme with dark/light mode CSS custom properties and fade/slide-in keyframe animations as required by project constraints"
-        },
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Verify Tailwind configuration extends the theme with oklch-based design tokens, custom fonts (Inter, JetBrains Mono), glow shadows, and accordion animations correctly"
-        },
-        {
-          "path": "frontend/src/constants/emotions.ts",
-          "operation": "modify",
-          "description": "Verify emotion types and intensity levels with associated prompt keywords are correctly defined and the helper function builds emotion prompt strings properly"
-        },
-        {
-          "path": "frontend/src/constants/negativePrompts.ts",
-          "operation": "modify",
-          "description": "Verify negative prompt presets (Low Quality, Blur & Noise, etc.) are correctly defined as string constants with ordered key exports"
+          "description": "Add or update CSS custom properties and utility classes for navigation dropdown z-index layers if needed. Ensure global styles support proper stacking contexts for navigation overlays and do not inadvertently clip dropdown content."
         }
       ]
     }

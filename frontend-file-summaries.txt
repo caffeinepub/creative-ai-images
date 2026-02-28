@@ -1,8 +1,8 @@
 {
-  "frontend/src/App.tsx": "Root app component that wires the image generation form, image display, and prompt history together with React Query and ThemeProvider; manages generation state and delegates to useGenerateImage and useSendQueries hooks.",
+  "frontend/src/App.tsx": "Root app component with QueryClientProvider and ThemeProvider; exports the OnGeneratePayload type, manages generation state using ParsedImageResult fields (imageUrl/error), and renders a two-column layout with a sticky left form panel (overflow-x-visible to prevent dropdown clipping) and right image/history panel.",
   "frontend/src/components/Header.tsx": "Sticky header displaying the AI Image Studio logo with amber/gold gradient styling and \"Powered by Hugging Face\" subtitle.",
   "frontend/src/components/Footer.tsx": "Footer with dynamic copyright year and caffeine.ai attribution link with UTM tracking parameters.",
-  "frontend/src/components/ImageGenerationForm.tsx": "Full image generation form with all parameter controls (art style, aspect ratio, model, negative prompt preset, scene/camera/lighting/composition, emotions, presets) and API token input with show/hide toggle.",
+  "frontend/src/components/ImageGenerationForm.tsx": "Full image generation form using correct existing types (NegativePromptPreset, NEGATIVE_PROMPT_PRESET_OPTIONS, EMOTIONS, buildEmotionPrompt with two args); all SelectContent dropdowns use position=\"popper\" with z-[99999] to float above sibling card sections without overlap.",
   "frontend/src/components/ImageDisplay.tsx": "Displays generated image, loading spinner, or user-friendly error messages with dedicated handling for HF_EMPTY_RESPONSE, 401, 503, and other error codes including a retry hint.",
   "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including image generation, prompt history, and presets; includes response parsing utilities for Hugging Face API errors and IC trap messages.",
   "frontend/src/index.css": "OKLCH-based dark studio theme with deep charcoal backgrounds and warm amber/gold accents for both dark (default) and light modes, with fade/slide-in keyframe animations.",

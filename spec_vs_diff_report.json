@@ -1,15 +1,41 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-28T05:57:46.501Z",
-  "summary": "The diff shows modifications to existing files consistent with a redeploy of the AI Image Studio application. The backend Motoko actor with Hugging Face HTTP outcalls is present, the React frontend components (ImageGenerationForm, Footer) are present with all required fields, and supporting files (frontend-file-summaries.txt, project_state.json) reflect the full application structure. The changes appear to be a straight redeploy without new features or removed functionality.",
-  "missing_requirements": [],
-  "hallucinated_features": [],
-  "confidence": 0.72,
+  "generatedAt": "2026-02-28T06:12:00.801Z",
+  "summary": "The diff modifies frontend/src/App.tsx and frontend/src/components/ImageGenerationForm.tsx. The changes in ImageGenerationForm.tsx add position='popper' with z-[99999] to SelectContent dropdowns to prevent overlap, and App.tsx adjusts the left panel to use overflow-x-visible to prevent dropdown clipping. However, REQ-1 specifically targets the primary navigation menu (Header component) dropdowns. The Header.tsx is described as a simple sticky header with logo/subtitle and no dropdown menus. There is no evidence in the diff that a primary navigation dropdown was fixed — instead, form select dropdowns in ImageGenerationForm were addressed. The actual navigation component (Header.tsx) shows no changes.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Fix the primary navigation menu dropdown so it renders in its own stacking layer with absolute positioning and high z-index, floating above the rest of the navigation without displacing or obscuring sibling elements.",
+      "reason": "The diff addresses Select component dropdowns inside the ImageGenerationForm, not the primary navigation menu. The Header.tsx file (where primary navigation would reside) is listed as unchanged and described as only containing a logo and subtitle with no dropdown menus. No navigation dropdown fix is evidenced in the diff.",
+      "evidence": [
+        "frontend/src/components/Header.tsx",
+        "frontend/src/components/ImageGenerationForm.tsx",
+        "frontend-file-summaries.txt"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Form select dropdowns in ImageGenerationForm given position='popper' and z-[99999] to prevent overlap with sibling card sections.",
+      "reason": "REQ-1 explicitly targets the primary navigation menu dropdowns, not form-level Select components inside ImageGenerationForm. Fixing form dropdowns was not requested.",
+      "evidence": [
+        "frontend/src/components/ImageGenerationForm.tsx",
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "App.tsx left panel given overflow-x-visible and a comment about avoiding stacking context issues with dropdowns.",
+      "reason": "This change addresses layout stacking context for the form panel, not the primary navigation menu as specified in REQ-1.",
+      "evidence": [
+        "frontend/src/App.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.82,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/Footer.tsx",
+    "frontend/src/App.tsx",
     "frontend/src/components/ImageGenerationForm.tsx",
     "project_state.json"
   ]

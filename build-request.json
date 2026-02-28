@@ -1,41 +1,36 @@
 {
   "kind": "build_request",
-  "title": "Redeploy AI Image Studio app",
-  "projectName": "AI Image Studio",
+  "title": "Fix primary navigation dropdown overlap issue",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Redeploy the full AI Image Studio application (backend and frontend) in its current state, ensuring the Motoko backend actor with Hugging Face HTTP outcalls and the React frontend with image generation form, display, and prompt history are all fully functional.",
-      "target": "both",
+      "text": "Fix the primary navigation menu so that when the first dropdown is opened, its list items (especially those at the bottom of the list) do not visually overlap or crowd over adjacent dropdown menu headings. The open dropdown must render in its own stacking layer (e.g., using absolute positioning with a sufficiently high z-index and overflow visible on the nav bar) so it floats above the rest of the navigation without displacing or obscuring sibling elements.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1",
-          "msg-2"
+          "msg-recent-user"
         ],
         "quotes": [
-          "Re build",
-          "Generation Failed\nNot Found"
+          "In the primary navigation menu, when I click on the first drop down option, the text at the bottom of the list crowds over the other drop down menu headings."
         ]
       },
       "acceptanceCriteria": [
-        "The app loads without errors in the browser",
-        "The image generation form renders correctly with all fields (art style, emotion, lighting, pose, etc.)",
-        "The backend responds to image generation requests",
-        "Prompt history displays previously generated prompts",
-        "No 'Not Found' or deployment errors appear"
+        "Opening the first dropdown in the primary navigation does not shift, overlap, or obscure any other navigation headings or dropdowns.",
+        "The dropdown panel floats above page content via absolute positioning and a high z-index.",
+        "All items in the open dropdown list are fully readable without clipping or overflow into sibling nav elements.",
+        "Closing the dropdown restores the navigation bar to its original layout with no residual overlap."
       ]
     }
   ],
   "constraints": [
-    "Do not change any existing logic or UI — this is a straight redeploy of the existing codebase",
-    "Preserve the charcoal+amber studio theme defined in frontend/src/index.css",
-    "Do not modify immutable frontend paths"
+    "Do not alter any files under frontend/src/hooks/ or frontend/src/components/ui (immutable paths).",
+    "Do not change backend logic or data models."
   ],
   "nonGoals": [
-    "Adding new features",
-    "Changing the visual design",
-    "Modifying backend API endpoints"
+    "Redesigning the overall navigation structure or visual theme.",
+    "Fixing the image generation 'Not Found' error (separate issue tracked elsewhere).",
+    "Adding new navigation items or dropdown sections."
   ],
   "imageRequirements": {
     "required": [],

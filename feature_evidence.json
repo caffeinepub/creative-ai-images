@@ -1,26 +1,4 @@
 {
   "kind": "feature_evidence_report",
-  "features": [
-    {
-      "featureId": "feature-redeploy-the-full-ai-image-studio-application-backend-and-frontend-in-its-current-state-ensuring-the-motoko-backend-actor-with-hugging-face-http-outcalls-and-the-react-frontend-with-image-generation-form-display-and-prompt-history-are-all-fully-functional",
-      "featureTitle": "Redeploy the full AI Image Studio application (backend and frontend) in its current state, ensuring the Motoko backend actor with Hugging Face HTTP outcalls and the React frontend with image generation form, display, and prompt history are all fully functional.",
-      "files": [
-        "frontend/src/components/Footer.tsx",
-        "frontend/src/components/ImageGenerationForm.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0",
-        "blob-storage@4.0.0"
-      ],
-      "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    }
-  ]
+  "features": []
 }
