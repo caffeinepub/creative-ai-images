@@ -1,302 +1,93 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add camera angles, lighting, environment, composition selectors and expand negative prompt presets",
+  "title": "Redeploy AI Image Studio Frontend",
   "requirements": [
     {
-      "id": "REQ-76",
-      "summary": "Add Camera Angle selector to ImageGenerationForm with 7 options",
+      "id": "REQ-1",
+      "summary": "Redeploy the full AI Image Studio frontend in its current state, ensuring the React frontend with image generation form, display, and prompt history are all fully functional",
       "acceptanceCriteria": [
-        "A dropdown labeled 'Camera Angle' appears in the form with all 7 options listed.",
-        "The selected value is stored in form state.",
-        "Selecting an option does not break existing form functionality."
+        "The app loads without errors in the browser",
+        "The image generation form renders correctly with all fields (art style, emotion, lighting, pose, etc.)",
+        "The backend responds to image generation requests",
+        "Prompt history displays previously generated prompts",
+        "No 'Not Found' or deployment errors appear"
       ],
       "file_operations": [
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Verify the HTML entry point is correctly configured with the #root mount point and main.tsx module reference to ensure the React app loads properly"
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Verify the React app entry point correctly wraps App with QueryClientProvider and InternetIdentityProvider, ensuring all context providers are properly initialized for the redeploy"
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Verify the root component correctly wires together ImageGenerationForm, ImageDisplay, and PromptHistory components with proper state management using useGenerateImage and useSendQueries hooks"
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Verify the sticky header displays the AI Image Studio logo, title with gradient styling, and 'Powered by Hugging Face' subtitle correctly"
+        },
         {
           "path": "frontend/src/components/ImageGenerationForm.tsx",
           "operation": "modify",
-          "description": "Add a Select dropdown for Camera Angle with options: Low Angle, High Angle, From Behind, Side View, Top-Down View, Close-Up, Full Body. Add state management for cameraAngle field using useState. Position the selector in the form layout alongside other parameter selectors."
-        }
-      ]
-    },
-    {
-      "id": "REQ-77",
-      "summary": "Update GenerationParams type to include cameraAngle field",
-      "acceptanceCriteria": [
-        "GenerationParams type has a cameraAngle field of type string.",
-        "The field is properly initialized with a default empty string or first option value."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add cameraAngle: string field to the GenerationParams type definition. Initialize the field with an empty string in the default state object."
-        }
-      ]
-    },
-    {
-      "id": "REQ-78",
-      "summary": "Include camera angle in prompt generation logic",
-      "acceptanceCriteria": [
-        "When a camera angle is selected, the generated prompt includes the angle descriptor.",
-        "When no camera angle is selected, the prompt is unaffected."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update the prompt generation logic in the onGenerate handler to include the cameraAngle value when non-empty. Format it as a photography descriptor (e.g., 'low angle shot', 'close-up shot') and append it to the comprehensive prompt text."
-        }
-      ]
-    },
-    {
-      "id": "REQ-79",
-      "summary": "Add camera angle badge to ImageDisplay component",
-      "acceptanceCriteria": [
-        "A 'Camera Angle' badge appears in ImageDisplay when a value is set.",
-        "No badge is shown when the field is empty.",
-        "Existing badges are unaffected."
-      ],
-      "file_operations": [
+          "description": "Verify the form component renders all image generation parameters (art style, emotion, lighting, pose, etc.) with preset save/load functionality and API token dialog working correctly"
+        },
         {
           "path": "frontend/src/components/ImageDisplay.tsx",
           "operation": "modify",
-          "description": "Add a conditional Badge for Camera Angle in the parameters section. Display it only when params.cameraAngle is non-empty. Use the existing Badge styling and layout pattern."
-        }
-      ]
-    },
-    {
-      "id": "REQ-80",
-      "summary": "Add Lighting selector to ImageGenerationForm with 7 options",
-      "acceptanceCriteria": [
-        "A dropdown labeled 'Lighting' appears in the form with all 7 options listed.",
-        "The selected value is stored in form state.",
-        "Selecting an option does not break existing form functionality."
-      ],
-      "file_operations": [
+          "description": "Verify the image display component correctly shows generated images, loading spinner, or user-friendly error messages mapped from backend error codes (HF_EMPTY_RESPONSE, 401, 503) with retry hints"
+        },
         {
-          "path": "frontend/src/components/ImageGenerationForm.tsx",
+          "path": "frontend/src/components/PromptHistory.tsx",
           "operation": "modify",
-          "description": "Add a Select dropdown for Lighting with options: Dramatic Lighting, Rim Lighting, Soft Shadows, Backlit, Volumetric Light, Dim Lighting, Neon Lighting. Add state management for lighting field using useState. Position the selector in the form layout."
-        }
-      ]
-    },
-    {
-      "id": "REQ-81",
-      "summary": "Update GenerationParams type to include lighting field",
-      "acceptanceCriteria": [
-        "GenerationParams type has a lighting field of type string.",
-        "The field is properly initialized."
-      ],
-      "file_operations": [
+          "description": "Verify the collapsible prompt history card fetches and displays generation history sorted by timestamp with copy-to-clipboard functionality working correctly"
+        },
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/components/Footer.tsx",
           "operation": "modify",
-          "description": "Add lighting: string field to the GenerationParams type definition. Initialize the field with an empty string in the default state object."
-        }
-      ]
-    },
-    {
-      "id": "REQ-82",
-      "summary": "Include lighting option in prompt generation logic",
-      "acceptanceCriteria": [
-        "When a lighting option is selected, the generated prompt includes the lighting descriptor.",
-        "When no lighting is selected, the prompt is unaffected."
-      ],
-      "file_operations": [
+          "description": "Verify the footer displays copyright year and caffeine.ai attribution link with UTM tracking parameters correctly"
+        },
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Update the prompt generation logic in the onGenerate handler to include the lighting value when non-empty. Format it as a lighting descriptor (e.g., 'dramatic lighting', 'neon lighting') and append it to the comprehensive prompt text."
-        }
-      ]
-    },
-    {
-      "id": "REQ-83",
-      "summary": "Add lighting badge to ImageDisplay component",
-      "acceptanceCriteria": [
-        "A 'Lighting' badge appears in ImageDisplay when a value is set.",
-        "No badge is shown when the field is empty."
-      ],
-      "file_operations": [
+          "description": "Verify the backend actor hook correctly creates and caches the ICP backend actor using Internet Identity and invalidates dependent queries on actor changes"
+        },
         {
-          "path": "frontend/src/components/ImageDisplay.tsx",
+          "path": "frontend/src/hooks/useInternetIdentity.ts",
           "operation": "modify",
-          "description": "Add a conditional Badge for Lighting in the parameters section. Display it only when params.lighting is non-empty. Use the existing Badge styling and layout pattern."
-        }
-      ]
-    },
-    {
-      "id": "REQ-84",
-      "summary": "Add Environment selector to ImageGenerationForm with 7 options",
-      "acceptanceCriteria": [
-        "A dropdown labeled 'Environment' appears in the form with all 7 options listed.",
-        "The selected value is stored in form state.",
-        "Selecting an option does not break existing form functionality."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ImageGenerationForm.tsx",
-          "operation": "modify",
-          "description": "Add a Select dropdown for Environment with options: Bedroom, Shower, Balcony, Forest, Studio, Night City, Rooftop. Add state management for environment field using useState. Position the selector in the form layout."
-        }
-      ]
-    },
-    {
-      "id": "REQ-85",
-      "summary": "Update GenerationParams type to include environment field",
-      "acceptanceCriteria": [
-        "GenerationParams type has an environment field of type string.",
-        "The field is properly initialized."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add environment: string field to the GenerationParams type definition. Initialize the field with an empty string in the default state object."
-        }
-      ]
-    },
-    {
-      "id": "REQ-86",
-      "summary": "Include environment in prompt generation logic",
-      "acceptanceCriteria": [
-        "When an environment is selected, the generated prompt includes the environment descriptor.",
-        "When no environment is selected, the prompt is unaffected."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update the prompt generation logic in the onGenerate handler to include the environment value when non-empty. Format it as a location descriptor (e.g., 'in a bedroom', 'rooftop setting') and append it to the comprehensive prompt text."
-        }
-      ]
-    },
-    {
-      "id": "REQ-87",
-      "summary": "Add environment badge to ImageDisplay component",
-      "acceptanceCriteria": [
-        "An 'Environment' badge appears in ImageDisplay when a value is set.",
-        "No badge is shown when the field is empty."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ImageDisplay.tsx",
-          "operation": "modify",
-          "description": "Add a conditional Badge for Environment in the parameters section. Display it only when params.environment is non-empty. Use the existing Badge styling and layout pattern."
-        }
-      ]
-    },
-    {
-      "id": "REQ-88",
-      "summary": "Add Composition selector to ImageGenerationForm with 7 options",
-      "acceptanceCriteria": [
-        "A dropdown labeled 'Composition' appears in the form with all 7 options listed.",
-        "The selected value is stored in form state.",
-        "Selecting an option does not break existing form functionality."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ImageGenerationForm.tsx",
-          "operation": "modify",
-          "description": "Add a Select dropdown for Composition with options: Rule of Thirds, Centered, Sensual, Intimate, Dynamic, Artistic, Intricate Details. Add state management for composition field using useState. Position the selector in the form layout."
-        }
-      ]
-    },
-    {
-      "id": "REQ-89",
-      "summary": "Update GenerationParams type to include composition field",
-      "acceptanceCriteria": [
-        "GenerationParams type has a composition field of type string.",
-        "The field is properly initialized."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add composition: string field to the GenerationParams type definition. Initialize the field with an empty string in the default state object."
-        }
-      ]
-    },
-    {
-      "id": "REQ-90",
-      "summary": "Include composition option in prompt generation logic",
-      "acceptanceCriteria": [
-        "When a composition option is selected, the generated prompt includes the composition descriptor.",
-        "When no composition is selected, the prompt is unaffected."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update the prompt generation logic in the onGenerate handler to include the composition value when non-empty. Format it as a composition descriptor (e.g., 'rule of thirds composition', 'dynamic composition') and append it to the comprehensive prompt text."
-        }
-      ]
-    },
-    {
-      "id": "REQ-91",
-      "summary": "Add composition badge to ImageDisplay component",
-      "acceptanceCriteria": [
-        "A 'Composition' badge appears in ImageDisplay when a value is set.",
-        "No badge is shown when the field is empty."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ImageDisplay.tsx",
-          "operation": "modify",
-          "description": "Add a conditional Badge for Composition in the parameters section. Display it only when params.composition is non-empty. Use the existing Badge styling and layout pattern."
-        }
-      ]
-    },
-    {
-      "id": "REQ-92",
-      "summary": "Update useSendQueries to pass four new composition parameters to backend",
-      "acceptanceCriteria": [
-        "The mutation passes cameraAngle, lighting, environment, and composition fields to the backend.",
-        "Existing parameters are not affected."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Update the useSendQueries mutation to include cameraAngle, lighting, environment, and composition fields when constructing the PoseCriteria object for the backend sendQueries call. Map these frontend fields to the corresponding backend PoseCriteria properties."
-        }
-      ]
-    },
-    {
-      "id": "REQ-95",
-      "summary": "Add comprehensive negative prompt preset covering all required keywords",
-      "acceptanceCriteria": [
-        "A new 'Comprehensive' preset option appears in the negative prompt dropdown.",
-        "The preset text contains: bad anatomy, extra limbs, disfigured, deformed, blurry, low quality, watermark, text, bad hands.",
-        "All existing preset options remain unchanged."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/constants/negativePrompts.ts",
-          "operation": "modify",
-          "description": "Add a new preset object to the NEGATIVE_PROMPTS object with key 'Comprehensive' and value containing all required keywords: 'bad anatomy, extra limbs, disfigured, deformed, blurry, low quality, watermark, text, bad hands'. Update the NEGATIVE_PROMPT_OPTIONS array to include the new preset."
-        }
-      ]
-    },
-    {
-      "id": "REQ-96",
-      "summary": "Update preset save/load to include four new composition parameters",
-      "acceptanceCriteria": [
-        "Saving a preset captures the cameraAngle, lighting, environment, and composition values.",
-        "Loading a preset restores all four fields in the form.",
-        "Existing preset save/load behavior is not broken."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ImageGenerationForm.tsx",
-          "operation": "modify",
-          "description": "Update the handleSavePreset function to include cameraAngle, lighting, environment, and composition in the criteria object passed to the backend. Update the handleLoadPreset function to restore these four fields from the loaded preset criteria and update the component state accordingly."
+          "description": "Verify the Internet Identity provider and hook correctly manage DFINITY AuthClient login, logout, and identity state across the app"
         },
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Update the useSavePreset mutation to include cameraAngle, lighting, environment, and composition fields in the PoseCriteria object. Ensure the useGetPresets query returns these fields so they can be restored when loading presets."
+          "description": "Verify React Query hooks for image generation, prompt history, and presets work correctly with response-parsing utilities that normalize backend and Hugging Face API errors"
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Verify the global CSS file preserves the charcoal+amber studio theme with dark/light mode CSS custom properties and fade/slide-in keyframe animations as required by project constraints"
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Verify Tailwind configuration extends the theme with oklch-based design tokens, custom fonts (Inter, JetBrains Mono), glow shadows, and accordion animations correctly"
+        },
+        {
+          "path": "frontend/src/constants/emotions.ts",
+          "operation": "modify",
+          "description": "Verify emotion types and intensity levels with associated prompt keywords are correctly defined and the helper function builds emotion prompt strings properly"
+        },
+        {
+          "path": "frontend/src/constants/negativePrompts.ts",
+          "operation": "modify",
+          "description": "Verify negative prompt presets (Low Quality, Blur & Noise, etc.) are correctly defined as string constants with ordered key exports"
         }
       ]
     }

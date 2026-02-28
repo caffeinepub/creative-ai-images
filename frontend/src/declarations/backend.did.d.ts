@@ -10,6 +10,16 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface GenerateImageArgs {
+  'model' : string,
+  'positivePrompt' : string,
+  'temperature' : number,
+  'seed' : bigint,
+  'negativePrompt' : string,
+  'aspectRatio' : string,
+}
+export type GenerateImageResult = { 'ok' : string } |
+  { 'err' : string };
 export interface PoseCriteria {
   'age' : bigint,
   'weight' : number,
@@ -46,6 +56,17 @@ export interface TransformationOutput {
   'body' : Uint8Array,
   'headers' : Array<http_header>,
 }
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface http_header { 'value' : string, 'name' : string }
 export interface http_request_result {
   'status' : bigint,
@@ -53,8 +74,29 @@ export interface http_request_result {
   'headers' : Array<http_header>,
 }
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
+  'generateImage' : ActorMethod<
+    [GenerateImageArgs, string, string],
+    GenerateImageResult
+  >,
   'getPresets' : ActorMethod<[], Array<Preset>>,
   'getPromptHistory' : ActorMethod<[], Array<PromptHistory>>,
+  'getSituationBehaviors' : ActorMethod<[], Array<string>>,
+  'legacyGenerateImage' : ActorMethod<[GenerateImageArgs], GenerateImageResult>,
   'savePreset' : ActorMethod<[string, PoseCriteria], boolean>,
   'sendQueries' : ActorMethod<[PoseCriteria, string], string>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,

@@ -8,6 +8,29 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  'method' : IDL.Text,
+  'blob_hash' : IDL.Text,
+});
+export const _CaffeineStorageRefillInformation = IDL.Record({
+  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const _CaffeineStorageRefillResult = IDL.Record({
+  'success' : IDL.Opt(IDL.Bool),
+  'topped_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const GenerateImageArgs = IDL.Record({
+  'model' : IDL.Text,
+  'positivePrompt' : IDL.Text,
+  'temperature' : IDL.Float64,
+  'seed' : IDL.Int,
+  'negativePrompt' : IDL.Text,
+  'aspectRatio' : IDL.Text,
+});
+export const GenerateImageResult = IDL.Variant({
+  'ok' : IDL.Text,
+  'err' : IDL.Text,
+});
 export const PoseCriteria = IDL.Record({
   'age' : IDL.Nat,
   'weight' : IDL.Float64,
@@ -58,8 +81,45 @@ export const TransformationOutput = IDL.Record({
 });
 
 export const idlService = IDL.Service({
+  '_caffeineStorageBlobIsLive' : IDL.Func(
+      [IDL.Vec(IDL.Nat8)],
+      [IDL.Bool],
+      ['query'],
+    ),
+  '_caffeineStorageBlobsToDelete' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      ['query'],
+    ),
+  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [],
+      [],
+    ),
+  '_caffeineStorageCreateCertificate' : IDL.Func(
+      [IDL.Text],
+      [_CaffeineStorageCreateCertificateResult],
+      [],
+    ),
+  '_caffeineStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_CaffeineStorageRefillInformation)],
+      [_CaffeineStorageRefillResult],
+      [],
+    ),
+  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
+  'generateImage' : IDL.Func(
+      [GenerateImageArgs, IDL.Text, IDL.Text],
+      [GenerateImageResult],
+      [],
+    ),
   'getPresets' : IDL.Func([], [IDL.Vec(Preset)], ['query']),
   'getPromptHistory' : IDL.Func([], [IDL.Vec(PromptHistory)], ['query']),
+  'getSituationBehaviors' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+  'legacyGenerateImage' : IDL.Func(
+      [GenerateImageArgs],
+      [GenerateImageResult],
+      [],
+    ),
   'savePreset' : IDL.Func([IDL.Text, PoseCriteria], [IDL.Bool], []),
   'sendQueries' : IDL.Func([PoseCriteria, IDL.Text], [IDL.Text], []),
   'transform' : IDL.Func(
@@ -72,6 +132,29 @@ export const idlService = IDL.Service({
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+    'method' : IDL.Text,
+    'blob_hash' : IDL.Text,
+  });
+  const _CaffeineStorageRefillInformation = IDL.Record({
+    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const _CaffeineStorageRefillResult = IDL.Record({
+    'success' : IDL.Opt(IDL.Bool),
+    'topped_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const GenerateImageArgs = IDL.Record({
+    'model' : IDL.Text,
+    'positivePrompt' : IDL.Text,
+    'temperature' : IDL.Float64,
+    'seed' : IDL.Int,
+    'negativePrompt' : IDL.Text,
+    'aspectRatio' : IDL.Text,
+  });
+  const GenerateImageResult = IDL.Variant({
+    'ok' : IDL.Text,
+    'err' : IDL.Text,
+  });
   const PoseCriteria = IDL.Record({
     'age' : IDL.Nat,
     'weight' : IDL.Float64,
@@ -116,8 +199,45 @@ export const idlFactory = ({ IDL }) => {
   });
   
   return IDL.Service({
+    '_caffeineStorageBlobIsLive' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Bool],
+        ['query'],
+      ),
+    '_caffeineStorageBlobsToDelete' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        ['query'],
+      ),
+    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [],
+        [],
+      ),
+    '_caffeineStorageCreateCertificate' : IDL.Func(
+        [IDL.Text],
+        [_CaffeineStorageCreateCertificateResult],
+        [],
+      ),
+    '_caffeineStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_CaffeineStorageRefillInformation)],
+        [_CaffeineStorageRefillResult],
+        [],
+      ),
+    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
+    'generateImage' : IDL.Func(
+        [GenerateImageArgs, IDL.Text, IDL.Text],
+        [GenerateImageResult],
+        [],
+      ),
     'getPresets' : IDL.Func([], [IDL.Vec(Preset)], ['query']),
     'getPromptHistory' : IDL.Func([], [IDL.Vec(PromptHistory)], ['query']),
+    'getSituationBehaviors' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'legacyGenerateImage' : IDL.Func(
+        [GenerateImageArgs],
+        [GenerateImageResult],
+        [],
+      ),
     'savePreset' : IDL.Func([IDL.Text, PoseCriteria], [IDL.Bool], []),
     'sendQueries' : IDL.Func([PoseCriteria, IDL.Text], [IDL.Text], []),
     'transform' : IDL.Func(

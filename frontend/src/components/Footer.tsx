@@ -2,8 +2,8 @@ import { Heart } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const appIdentifier = typeof window !== 'undefined' 
-    ? encodeURIComponent(window.location.hostname) 
+  const appIdentifier = typeof window !== 'undefined'
+    ? encodeURIComponent(window.location.hostname)
     : 'ai-image-studio';
 
   return (

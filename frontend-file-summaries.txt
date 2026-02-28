@@ -1,12 +1,13 @@
 {
-  "frontend/src/App.tsx": "Main application component with updated `GenerationParams` type now including four new image composition fields (`cameraAngle`, `lighting`, `environment`, `composition`), and extended `generatePrompt` logic that appends these descriptors to the prompt when selected.",
-  "frontend/src/components/Header.tsx": "Header component displaying the app logo, title, and NSFW content support badge with professional styling.",
-  "frontend/src/components/Footer.tsx": "Footer component with copyright information and attribution link to caffeine.ai with proper UTM tracking.",
-  "frontend/src/components/ImageGenerationForm.tsx": "Form component with all generation parameters including a new \"Image Composition\" section featuring Camera Angle, Lighting, Environment, and Composition dropdowns, with full preset save/load support for all new fields.",
-  "frontend/src/components/ImageDisplay.tsx": "Display component showing generated image, prompt, and parameter badges, now including a dedicated \"Image Composition\" badge group for the four new composition parameters (Camera Angle, Lighting, Environment, Composition) rendered only when non-empty values are selected.",
-  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations, updated to include the four new composition fields (`cameraAngle`, `lighting`, `environment`, `composition`) in all mutation interfaces (`SendQueriesParams`, `GenerateImageParams`, `SavePresetParams`) and their corresponding `PoseCriteria` objects sent to the backend.",
-  "frontend/src/index.css": "Global styles with OKLCH color system featuring electric blue and purple gradient theme for a modern AI/tech aesthetic with custom animations.",
-  "frontend/tailwind.config.js": "Tailwind configuration with extended color palette, custom font family, and design tokens supporting the vibrant tech-forward visual theme.",
-  "frontend/src/constants/negativePrompts.ts": "Defines negative prompt presets for Stable Diffusion with keyword mappings including a new \"Comprehensive\" preset covering bad anatomy, extra limbs, disfigured, deformed, blurry, low quality, watermark, text, and bad hands.",
-  "frontend/src/components/PromptHistory.tsx": "Component displaying chronological list of generated prompts with collapsible details, copy functionality, formatted timestamps, and parameter badges using ScrollArea for scrollable history."
+  "frontend/src/App.tsx": "Root app component that wires the image generation form, image display, and prompt history together with React Query and ThemeProvider; manages generation state and delegates to useGenerateImage and useSendQueries hooks.",
+  "frontend/src/components/Header.tsx": "Sticky header displaying the AI Image Studio logo with amber/gold gradient styling and \"Powered by Hugging Face\" subtitle.",
+  "frontend/src/components/Footer.tsx": "Footer with dynamic copyright year and caffeine.ai attribution link with UTM tracking parameters.",
+  "frontend/src/components/ImageGenerationForm.tsx": "Full image generation form with all parameter controls (art style, aspect ratio, model, negative prompt preset, scene/camera/lighting/composition, emotions, presets) and API token input with show/hide toggle.",
+  "frontend/src/components/ImageDisplay.tsx": "Displays generated image, loading spinner, or user-friendly error messages with dedicated handling for HF_EMPTY_RESPONSE, 401, 503, and other error codes including a retry hint.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including image generation, prompt history, and presets; includes response parsing utilities for Hugging Face API errors and IC trap messages.",
+  "frontend/src/index.css": "OKLCH-based dark studio theme with deep charcoal backgrounds and warm amber/gold accents for both dark (default) and light modes, with fade/slide-in keyframe animations.",
+  "frontend/tailwind.config.js": "Tailwind config mapping OKLCH CSS variables to semantic tokens with amber/gold glow shadows, Inter/DM Sans fonts, and accordion animations.",
+  "frontend/src/constants/negativePrompts.ts": "Defines five quality-focused negative prompt presets with their string values and an ordered array of preset keys.",
+  "frontend/src/components/PromptHistory.tsx": "Collapsible prompt history card that fetches and displays generation history sorted by timestamp with copy-to-clipboard functionality.",
+  "frontend/src/constants/emotions.ts": "Exports four emotion categories (Joy, Sadness, Anger, Fear) with three intensity levels each and a buildEmotionPrompt helper function."
 }

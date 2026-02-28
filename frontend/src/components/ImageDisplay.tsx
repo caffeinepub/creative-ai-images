@@ -1,311 +1,204 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { User, Ruler, Weight, Calendar, Globe, Palette, Copy, Check, ShieldAlert, Maximize2, AlertCircle, Camera, Shirt, Drama, Sun, MapPin, Layout } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useState, useMemo } from 'react';
-import { toast } from 'sonner';
-import type { GenerationParams } from '../App';
-import { NEGATIVE_PROMPT_PRESETS } from '../constants/negativePrompts';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, ImageIcon, AlertCircle, Info, RefreshCw } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ImageDisplayProps {
-  params: GenerationParams;
-  prompt: string;
-  imageData: Uint8Array | null;
+  imageUrl: string | null;
+  isLoading: boolean;
+  error: string | null;
+  prompt?: string;
+  model?: string;
+  aspectRatio?: string;
 }
 
-export default function ImageDisplay({ params, prompt, imageData }: ImageDisplayProps) {
-  const [copied, setCopied] = useState(false);
+function getFriendlyError(error: string): { title: string; message: string; hint?: string } {
+  if (
+    error.includes("HF_TOKEN_MISSING") ||
+    error.includes("HF_TOKEN not set") ||
+    error.includes("HF_TOKEN is empty")
+  ) {
+    return {
+      title: "API Token Required",
+      message:
+        "Please enter your Hugging Face API token in the form above. You can get a free token at huggingface.co/settings/tokens.",
+    };
+  }
 
-  // Convert image bytes to blob URL for display
-  const imageUrl = useMemo(() => {
-    if (!imageData || imageData.length === 0) {
-      return null;
-    }
-    const blob = new Blob([new Uint8Array(imageData)], { type: 'image/png' });
-    return URL.createObjectURL(blob);
-  }, [imageData]);
+  if (error.includes("HF_EMPTY_RESPONSE") || error.includes("empty HTTP response") || error.includes("empty response")) {
+    return {
+      title: "Service Returned Empty Response",
+      message:
+        "The image generation service returned an empty response. This usually means the model is temporarily overloaded or unavailable.",
+      hint: "Please wait a few seconds and try again. If the issue persists, the Hugging Face service may be experiencing high traffic.",
+    };
+  }
 
-  // Get aspect ratio for image container
-  const getAspectRatioClass = () => {
-    switch (params.aspectRatio) {
-      case '1:1':
-        return 'aspect-square';
-      case '2:3':
-        return 'aspect-[2/3]';
-      case '3:2':
-        return 'aspect-[3/2]';
-      case '16:9':
-        return 'aspect-video';
-      case '21:9':
-        return 'aspect-[21/9]';
-      case '9:16':
-        return 'aspect-[9/16]';
-      default:
-        return 'aspect-square';
+  if (error.includes("HF_REQUEST_FAILED:401")) {
+    return {
+      title: "Invalid API Token",
+      message:
+        "Your Hugging Face API token is invalid or expired. Please check your token and try again.",
+    };
+  }
+
+  if (error.includes("HF_REQUEST_FAILED:503")) {
+    return {
+      title: "Model Loading",
+      message:
+        "The AI model is currently loading on Hugging Face servers. This can take 20–60 seconds. Please try again shortly.",
+    };
+  }
+
+  if (error.includes("HF_REQUEST_FAILED:429")) {
+    return {
+      title: "Rate Limit Reached",
+      message:
+        "You've hit the Hugging Face API rate limit. Please wait a moment before trying again.",
+    };
+  }
+
+  if (error.includes("HF_REQUEST_FAILED:400")) {
+    return {
+      title: "Bad Request",
+      message:
+        "The request to the image generation service was malformed. Please try again or adjust your prompt.",
+    };
+  }
+
+  if (error.includes("HF_REQUEST_FAILED")) {
+    const match = error.match(/HF_REQUEST_FAILED:(\d+):(.+)/);
+    if (match) {
+      return {
+        title: `API Error (${match[1]})`,
+        message: match[2].trim(),
+      };
     }
+  }
+
+  if (error.includes("Backend actor not initialized")) {
+    return {
+      title: "Connection Error",
+      message: "The backend is not yet ready. Please wait a moment and try again.",
+    };
+  }
+
+  // Catch IC trap / canister error messages about empty responses
+  if (
+    error.toLowerCase().includes("ic0503") ||
+    (error.toLowerCase().includes("canister") && error.toLowerCase().includes("trap"))
+  ) {
+    return {
+      title: "Service Temporarily Unavailable",
+      message:
+        "The image generation service encountered an error. This is often caused by an empty or invalid response from the AI model.",
+      hint: "Please try again in a moment.",
+    };
+  }
+
+  // Strip the "Generation failed: " prefix for display if present
+  const displayMessage = error.startsWith("Generation failed: ")
+    ? error.slice("Generation failed: ".length)
+    : error;
+
+  return {
+    title: "Generation Failed",
+    message: displayMessage,
   };
+}
 
-  const getFullPromptWithNegative = () => {
-    const negativePromptText = params.negativePromptPreset
-      ? NEGATIVE_PROMPT_PRESETS[params.negativePromptPreset]
-      : '';
-
-    if (negativePromptText) {
-      return `${prompt}\n\nNegative prompt: ${negativePromptText}`;
-    }
-    return prompt;
-  };
-
-  const handleCopyPrompt = async () => {
-    try {
-      await navigator.clipboard.writeText(getFullPromptWithNegative());
-      setCopied(true);
-      toast.success('Prompt copied to clipboard!');
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast.error('Failed to copy prompt');
-    }
-  };
-
-  const formatArtStyleLabel = (artStyle: string): string => {
-    switch (artStyle) {
-      case 'realistic':
-        return 'Realistic';
-      case 'pencil':
-        return 'Pencil';
-      case 'watercolors':
-        return 'Watercolors';
-      case 'cartoon':
-        return 'Cartoon';
-      case 'caricature':
-        return 'Caricature';
-      case 'charcoal':
-        return 'Charcoal';
-      default:
-        return artStyle.charAt(0).toUpperCase() + artStyle.slice(1);
-    }
-  };
-
-  const hasSituationParams =
-    (params.situationPose && params.situationPose !== 'none') ||
-    (params.situationFiguration && params.situationFiguration !== 'none') ||
-    (params.situationBehavior && params.situationBehavior !== 'none') ||
-    (params.situationPosing && params.situationPosing !== 'none');
-
-  const hasCompositionParams =
-    !!params.cameraAngle ||
-    !!params.lighting ||
-    !!params.environment ||
-    !!params.composition;
+export function ImageDisplay({
+  imageUrl,
+  isLoading,
+  error,
+  prompt,
+  model,
+  aspectRatio,
+}: ImageDisplayProps) {
+  const friendlyError = error ? getFriendlyError(error) : null;
 
   return (
-    <Card className="border-2 border-accent/20 shadow-xl shadow-accent/5 bg-card/50 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">Generated Result</CardTitle>
-        <CardDescription>Your AI-generated image and parameters</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Image Display */}
-        {imageUrl ? (
-          <div className="relative overflow-hidden rounded-lg border-2 border-primary/20 bg-muted/30">
-            <div className={`w-full ${getAspectRatioClass()}`}>
+    <div className="space-y-4">
+      <Card className="border-border/40 bg-card/80 backdrop-blur-sm overflow-hidden">
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-80 gap-4 text-muted-foreground">
+              <div className="relative">
+                <div className="w-16 h-16 rounded-full border-2 border-primary/20 flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+                <div className="absolute inset-0 rounded-full border-2 border-primary/10 animate-ping" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-foreground">Generating your image…</p>
+                <p className="text-sm text-muted-foreground mt-1">This may take 20–60 seconds</p>
+              </div>
+            </div>
+          ) : imageUrl ? (
+            <div className="relative group">
               <img
                 src={imageUrl}
-                alt="Generated image"
-                className="w-full h-full object-cover"
+                alt={prompt || "Generated image"}
+                className="w-full h-auto object-contain rounded-lg"
+                style={{ maxHeight: "600px" }}
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
             </div>
-          </div>
-        ) : (
-          <Alert className="border-destructive/50 bg-destructive/10">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Image generation is currently unavailable. The backend needs to implement the Stable Diffusion API integration.
-              Your prompt and parameters are displayed below.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Prompt Display */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Palette className="w-5 h-5 text-primary" />
-              Generated Prompt
-            </h3>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCopyPrompt}
-              className="gap-2"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4" />
-                  Copy
-                </>
-              )}
-            </Button>
-          </div>
-          <div className="p-4 rounded-lg bg-muted/50 border border-primary/10">
-            <p className="text-sm text-foreground/90 whitespace-pre-wrap font-mono">
-              {prompt}
-            </p>
-            {params.negativePromptPreset && (
-              <div className="mt-4 pt-4 border-t border-border/50">
-                <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-2">
-                  <ShieldAlert className="w-4 h-4" />
-                  Negative Prompt:
-                </p>
-                <p className="text-sm text-foreground/80 whitespace-pre-wrap font-mono">
-                  {NEGATIVE_PROMPT_PRESETS[params.negativePromptPreset]}
-                </p>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-80 gap-3 text-muted-foreground">
+              <div className="w-16 h-16 rounded-2xl bg-muted/30 flex items-center justify-center">
+                <ImageIcon className="w-8 h-8 opacity-40" />
               </div>
-            )}
-          </div>
-        </div>
+              <div className="text-center">
+                <p className="font-medium text-foreground/60">No image yet</p>
+                <p className="text-sm mt-1">Configure your settings and click Generate</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-        {/* Parameters Display */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold">Parameters</h3>
-          <div className="flex flex-wrap gap-2">
-            {params.bodyType && (
-              <Badge variant="secondary" className="gap-1.5">
-                <User className="w-3.5 h-3.5" />
-                {params.bodyType}
-              </Badge>
+      {friendlyError && !isLoading && (
+        <Alert variant="destructive" className="border-destructive/40 bg-destructive/10">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>{friendlyError.title}</AlertTitle>
+          <AlertDescription className="space-y-1">
+            <p>{friendlyError.message}</p>
+            {friendlyError.hint && (
+              <p className="flex items-center gap-1.5 text-xs opacity-80 mt-1">
+                <RefreshCw className="w-3 h-3 flex-shrink-0" />
+                {friendlyError.hint}
+              </p>
             )}
-            {params.height && (
-              <Badge variant="secondary" className="gap-1.5">
-                <Ruler className="w-3.5 h-3.5" />
-                {params.height}cm
-              </Badge>
-            )}
-            {params.weight && (
-              <Badge variant="secondary" className="gap-1.5">
-                <Weight className="w-3.5 h-3.5" />
-                {params.weight}kg
-              </Badge>
-            )}
-            {params.age && (
-              <Badge variant="secondary" className="gap-1.5">
-                <Calendar className="w-3.5 h-3.5" />
-                {params.age}
-              </Badge>
-            )}
-            {params.ethnicity && (
-              <Badge variant="secondary" className="gap-1.5">
-                <Globe className="w-3.5 h-3.5" />
-                {params.ethnicity}
-              </Badge>
-            )}
-            {params.artStyle && (
-              <Badge variant="secondary" className="gap-1.5">
-                <Palette className="w-3.5 h-3.5" />
-                {formatArtStyleLabel(params.artStyle)}
-              </Badge>
-            )}
-            {params.clothing && (
-              <Badge variant="secondary" className="gap-1.5">
-                <Shirt className="w-3.5 h-3.5" />
-                {params.clothing}
-              </Badge>
-            )}
-            {params.negativePromptPreset && (
-              <Badge variant="secondary" className="gap-1.5">
-                <ShieldAlert className="w-3.5 h-3.5" />
-                {params.negativePromptPreset}
-              </Badge>
-            )}
-            {params.aspectRatio && (
-              <Badge variant="secondary" className="gap-1.5">
-                <Maximize2 className="w-3.5 h-3.5" />
-                {params.aspectRatio}
-              </Badge>
-            )}
-            {params.cameraLens && (
-              <Badge variant="secondary" className="gap-1.5">
-                <Camera className="w-3.5 h-3.5" />
-                {params.cameraLens}
-              </Badge>
-            )}
-          </div>
+          </AlertDescription>
+        </Alert>
+      )}
 
-          {/* Situation Badges */}
-          {hasSituationParams && (
-            <div className="flex flex-wrap gap-2 pt-1">
-              <span className="text-xs text-muted-foreground flex items-center gap-1 w-full">
-                <Drama className="w-3.5 h-3.5" />
-                Situation:
-              </span>
-              {params.situationPose && params.situationPose !== 'none' && (
-                <Badge variant="outline" className="gap-1.5 border-secondary/40 text-secondary">
-                  <Drama className="w-3.5 h-3.5" />
-                  Pose: {params.situationPose}
+      {imageUrl && !isLoading && (prompt || model || aspectRatio) && (
+        <Card className="border-border/40 bg-card/80 backdrop-blur-sm">
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Info className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="font-medium text-foreground/70">Generation Details</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {model && (
+                <Badge variant="secondary" className="text-xs">
+                  {model.split("/").pop()}
                 </Badge>
               )}
-              {params.situationFiguration && params.situationFiguration !== 'none' && (
-                <Badge variant="outline" className="gap-1.5 border-secondary/40 text-secondary">
-                  <Drama className="w-3.5 h-3.5" />
-                  Figuration: {params.situationFiguration}
-                </Badge>
-              )}
-              {params.situationBehavior && params.situationBehavior !== 'none' && (
-                <Badge variant="outline" className="gap-1.5 border-secondary/40 text-secondary">
-                  <Drama className="w-3.5 h-3.5" />
-                  Behavior: {params.situationBehavior}
-                </Badge>
-              )}
-              {params.situationPosing && params.situationPosing !== 'none' && (
-                <Badge variant="outline" className="gap-1.5 border-secondary/40 text-secondary">
-                  <Drama className="w-3.5 h-3.5" />
-                  Posing: {params.situationPosing}
+              {aspectRatio && (
+                <Badge variant="outline" className="text-xs border-border/60">
+                  {aspectRatio}
                 </Badge>
               )}
             </div>
-          )}
-
-          {/* Image Composition Badges */}
-          {hasCompositionParams && (
-            <div className="flex flex-wrap gap-2 pt-1">
-              <span className="text-xs text-muted-foreground flex items-center gap-1 w-full">
-                <Sun className="w-3.5 h-3.5" />
-                Image Composition:
-              </span>
-              {params.cameraAngle && (
-                <Badge variant="outline" className="gap-1.5 border-accent/40 text-accent">
-                  <Camera className="w-3.5 h-3.5" />
-                  {params.cameraAngle}
-                </Badge>
-              )}
-              {params.lighting && (
-                <Badge variant="outline" className="gap-1.5 border-accent/40 text-accent">
-                  <Sun className="w-3.5 h-3.5" />
-                  {params.lighting}
-                </Badge>
-              )}
-              {params.environment && (
-                <Badge variant="outline" className="gap-1.5 border-accent/40 text-accent">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {params.environment}
-                </Badge>
-              )}
-              {params.composition && (
-                <Badge variant="outline" className="gap-1.5 border-accent/40 text-accent">
-                  <Layout className="w-3.5 h-3.5" />
-                  {params.composition}
-                </Badge>
-              )}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            {prompt && (
+              <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">{prompt}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
