@@ -2,118 +2,215 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-    :root {
-        --radius: 0.75rem;
-        --background: 0.98 0 0;
-        --foreground: 0.15 0 0;
-        --card: 1 0 0;
-        --card-foreground: 0.15 0 0;
-        --popover: 1 0 0;
-        --popover-foreground: 0.15 0 0;
-        --primary: 0.55 0.25 264;
-        --primary-foreground: 0.98 0 0;
-        --secondary: 0.65 0.22 285;
-        --secondary-foreground: 0.98 0 0;
-        --muted: 0.94 0.01 264;
-        --muted-foreground: 0.50 0.02 264;
-        --accent: 0.60 0.28 240;
-        --accent-foreground: 0.98 0 0;
-        --destructive: 0.58 0.24 27;
-        --destructive-foreground: 0.98 0 0;
-        --border: 0.90 0.02 264;
-        --input: 0.90 0.02 264;
-        --ring: 0.55 0.25 264;
-        --chart-1: 0.65 0.22 264;
-        --chart-2: 0.60 0.12 200;
-        --chart-3: 0.70 0.18 285;
-        --chart-4: 0.55 0.25 240;
-        --chart-5: 0.75 0.20 310;
-        --sidebar: 0.98 0 0;
-        --sidebar-foreground: 0.15 0 0;
-        --sidebar-primary: 0.55 0.25 264;
-        --sidebar-primary-foreground: 0.98 0 0;
-        --sidebar-accent: 0.94 0.01 264;
-        --sidebar-accent-foreground: 0.15 0 0;
-        --sidebar-border: 0.90 0.02 264;
-        --sidebar-ring: 0.55 0.25 264;
-    }
+/* ─── Font Faces ──────────────────────────────────────────────────────────── */
 
-    .dark {
-        --background: 0.12 0.02 264;
-        --foreground: 0.98 0.01 264;
-        --card: 0.16 0.03 264;
-        --card-foreground: 0.98 0.01 264;
-        --popover: 0.14 0.03 264;
-        --popover-foreground: 0.98 0.01 264;
-        --primary: 0.65 0.28 264;
-        --primary-foreground: 0.12 0.02 264;
-        --secondary: 0.70 0.25 285;
-        --secondary-foreground: 0.12 0.02 264;
-        --muted: 0.20 0.04 264;
-        --muted-foreground: 0.70 0.05 264;
-        --accent: 0.60 0.30 240;
-        --accent-foreground: 0.98 0.01 264;
-        --destructive: 0.65 0.28 27;
-        --destructive-foreground: 0.12 0.02 264;
-        --border: 0.25 0.05 264;
-        --input: 0.25 0.05 264;
-        --ring: 0.65 0.28 264;
-        --chart-1: 0.60 0.28 264;
-        --chart-2: 0.65 0.20 200;
-        --chart-3: 0.70 0.25 285;
-        --chart-4: 0.55 0.30 240;
-        --chart-5: 0.75 0.22 310;
-        --sidebar: 0.14 0.03 264;
-        --sidebar-foreground: 0.98 0.01 264;
-        --sidebar-primary: 0.65 0.28 264;
-        --sidebar-primary-foreground: 0.12 0.02 264;
-        --sidebar-accent: 0.20 0.04 264;
-        --sidebar-accent-foreground: 0.98 0.01 264;
-        --sidebar-border: 0.25 0.05 264;
-        --sidebar-ring: 0.65 0.28 264;
-    }
-
-    * {
-        @apply border-border;
-    }
-    
-    body {
-        @apply bg-background text-foreground;
-        font-feature-settings: "rlig" 1, "calt" 1;
-    }
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque[opsz,wdth,wght].woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/JetBrainsMono[wght].woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─── Design Tokens ───────────────────────────────────────────────────────── */
+
+@layer base {
+  :root {
+    /* Dark cinematic: deep slate + rose-gold */
+    --background: 0.11 0.008 260;
+    --foreground: 0.93 0.01 70;
+
+    --card: 0.15 0.01 260;
+    --card-foreground: 0.93 0.01 70;
+
+    --popover: 0.17 0.01 260;
+    --popover-foreground: 0.93 0.01 70;
+
+    /* Rose-gold primary */
+    --primary: 0.7 0.15 20;
+    --primary-foreground: 0.1 0.01 260;
+
+    --secondary: 0.2 0.01 260;
+    --secondary-foreground: 0.88 0.01 70;
+
+    --muted: 0.18 0.01 260;
+    --muted-foreground: 0.55 0.015 260;
+
+    /* Teal accent */
+    --accent: 0.65 0.12 195;
+    --accent-foreground: 0.1 0.01 260;
+
+    --destructive: 0.52 0.22 25;
+    --destructive-foreground: 0.98 0 0;
+
+    --border: 0.24 0.01 260;
+    --input: 0.2 0.01 260;
+    --ring: 0.7 0.15 20;
+
+    --radius: 0.5rem;
+
+    /* Chart */
+    --chart-1: 0.7 0.15 20;
+    --chart-2: 0.65 0.12 195;
+    --chart-3: 0.6 0.14 60;
+    --chart-4: 0.55 0.13 140;
+    --chart-5: 0.5 0.11 280;
+
+    /* Sidebar */
+    --sidebar: 0.13 0.01 260;
+    --sidebar-foreground: 0.93 0.01 70;
+    --sidebar-primary: 0.7 0.15 20;
+    --sidebar-primary-foreground: 0.1 0.01 260;
+    --sidebar-accent: 0.2 0.01 260;
+    --sidebar-accent-foreground: 0.88 0.01 70;
+    --sidebar-border: 0.24 0.01 260;
+    --sidebar-ring: 0.7 0.15 20;
+  }
+}
+
+/* ─── Base Styles ─────────────────────────────────────────────────────────── */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "General Sans", system-ui, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-feature-settings: "ss01" 1;
+  }
+
+  code,
+  pre,
+  kbd {
+    font-family: "JetBrains Mono", monospace;
+  }
+}
+
+/* ─── Utilities ───────────────────────────────────────────────────────────── */
+
 @layer utilities {
-    .animate-in {
-        animation-fill-mode: both;
-    }
-    
-    .fade-in {
-        animation: fade-in 0.5s ease-out;
-    }
-    
-    .slide-in-from-bottom-4 {
-        animation: slide-in-from-bottom 0.5s ease-out;
-    }
-    
-    @keyframes fade-in {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slide-in-from-bottom {
-        from {
-            transform: translateY(1rem);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Gradient heading text */
+  .text-gradient-primary {
+    background: linear-gradient(
+      135deg,
+      oklch(0.8 0.15 20) 0%,
+      oklch(0.7 0.12 195) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Card glass effect */
+  .card-glass {
+    background: oklch(0.15 0.01 260 / 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Subtle noise texture on bg */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: oklch(0.28 0.01 260);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.38 0.01 260);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ─── Radix Portal fix: prevent portal dropdown clipping ─────────────────── */
+
+[data-radix-popper-content-wrapper] {
+  z-index: 99999 !important;
 }

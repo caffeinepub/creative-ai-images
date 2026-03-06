@@ -1,115 +1,143 @@
-import { useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from 'next-themes';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import ImageGenerationForm from './components/ImageGenerationForm';
-import ImageDisplay from './components/ImageDisplay';
-import { Toaster } from '@/components/ui/sonner';
-import type { NegativePromptPreset } from './constants/negativePrompts';
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { ImageDisplay } from "@/components/ImageDisplay";
+import ImageGenerationForm from "@/components/ImageGenerationForm";
+import PromptHistory from "@/components/PromptHistory";
+import { Toaster } from "@/components/ui/sonner";
+import { useGenerateImage } from "@/hooks/useQueries";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
 
-const queryClient = new QueryClient();
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-export type GenerationParams = {
-  bodyType: 'skinny' | 'curvy' | 'oversized' | 'plus-size' | 'buxom' | 'saggy' | '';
-  height: string;
-  weight: string;
-  age: 'young adult' | 'adult' | 'mature' | '';
-  ethnicity: 'Caucasian' | 'African' | 'Asian' | 'Hispanic' | 'Middle Eastern' | 'Mixed' | '';
-  artStyle: 'realistic' | 'pencil' | 'watercolors' | '';
-  negativePromptPreset: NegativePromptPreset | '';
-};
+export interface OnGeneratePayload {
+  positivePrompt: string;
+  negativePrompt: string;
+  aspectRatio: string;
+  seed: bigint;
+  temperature: number;
+  model: string;
+  apiToken: string;
+}
+
+export interface GenerationParams {
+  model: string;
+  aspectRatio: string;
+  prompt: string;
+}
+
+// ─── QueryClient (module-level singleton, outside React tree) ─────────────────
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+    },
+  },
+});
+
+// ─── Inner content (needs QueryClient context) ────────────────────────────────
 
 function AppContent() {
-  const [generationParams, setGenerationParams] = useState<GenerationParams>({
-    bodyType: '',
-    height: '',
-    weight: '',
-    age: '',
-    ethnicity: '',
-    artStyle: '',
-    negativePromptPreset: '',
+  const [generationResult, setGenerationResult] = useState<{
+    imageUrl?: string | null;
+    error?: string | null;
+    params?: GenerationParams;
+  }>({});
+
+  const [retryMessage, setRetryMessage] = useState<string | null>(null);
+
+  const generateImageMutation = useGenerateImage({
+    onRetry: (msg) => setRetryMessage(msg),
   });
-  const [hasGenerated, setHasGenerated] = useState(false);
 
-  const handleGenerate = (params: GenerationParams) => {
-    setGenerationParams(params);
-    setHasGenerated(true);
-  };
-
-  const generatePrompt = (params: GenerationParams): string => {
-    const parts: string[] = [];
-    
-    if (params.artStyle) {
-      parts.push(`${params.artStyle} style`);
-    }
-    
-    if (params.age) {
-      parts.push(params.age);
-    }
-    
-    if (params.ethnicity) {
-      parts.push(params.ethnicity);
-    }
-    
-    if (params.bodyType) {
-      parts.push(`${params.bodyType} body type`);
-    }
-    
-    if (params.height) {
-      parts.push(`${params.height}cm tall`);
-    }
-    
-    if (params.weight) {
-      parts.push(`${params.weight}kg`);
-    }
-    
-    return parts.join(', ');
-  };
+  const handleGenerate = useCallback(
+    async (payload: OnGeneratePayload) => {
+      setGenerationResult({});
+      setRetryMessage(null);
+      try {
+        const result = await generateImageMutation.mutateAsync({
+          positivePrompt: payload.positivePrompt,
+          negativePrompt: payload.negativePrompt,
+          aspectRatio: payload.aspectRatio,
+          seed: payload.seed,
+          temperature: payload.temperature,
+          model: payload.model,
+          apiToken: payload.apiToken,
+        });
+        setGenerationResult({
+          imageUrl: result.imageUrl,
+          error: result.error,
+          params: {
+            model: payload.model,
+            aspectRatio: payload.aspectRatio,
+            prompt: payload.positivePrompt,
+          },
+        });
+      } catch (err) {
+        setGenerationResult({ error: String(err) });
+      }
+    },
+    [generateImageMutation],
+  );
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      <div className="min-h-screen flex flex-col bg-background">
-        <Header />
-        <main className="flex-1 container mx-auto px-4 py-8 md:py-12">
-          <div className="max-w-6xl mx-auto space-y-8">
-            {/* Hero Section */}
-            <section className="text-center space-y-4 mb-12">
-              <div className="inline-flex items-center justify-center mb-4">
-                <img 
-                  src="/assets/generated/ai-icon.dim_128x128.png" 
-                  alt="AI Icon" 
-                  className="w-20 h-20 animate-pulse"
-                />
-              </div>
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-                AI Image Prompt Generator
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                Create comprehensive AI image prompts with detailed character specifications. 
-                Customize body type, age, ethnicity, art style, and physical characteristics.
-              </p>
-            </section>
+    <div className="min-h-screen flex flex-col bg-background text-foreground bg-noise">
+      <Header />
 
-            {/* Form Section */}
-            <section>
-              <ImageGenerationForm onGenerate={handleGenerate} />
-            </section>
-
-            {/* Display Section */}
-            {hasGenerated && (
-              <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <ImageDisplay params={generationParams} prompt={generatePrompt(generationParams)} />
-              </section>
-            )}
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
+        {/* Hero section */}
+        <section className="text-center mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/20 bg-primary/8 text-primary text-xs font-medium mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            AI-Powered Prompt Generator
           </div>
-        </main>
-        <Footer />
-        <Toaster />
-      </div>
-    </ThemeProvider>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tight mb-3 text-gradient-primary">
+            AI Image Studio
+          </h1>
+          <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
+            Craft detailed prompts for Hugging Face models with comprehensive
+            style, subject, and camera controls.
+          </p>
+        </section>
+
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-5 items-start">
+          {/* Left panel — sticky, scrollable, overflow-x-visible for dropdown portals */}
+          <aside
+            className="lg:sticky lg:top-[4.5rem] lg:max-h-[calc(100vh-5.5rem)] lg:overflow-y-auto lg:overflow-x-visible scrollbar-thin"
+            style={{ position: "relative" }}
+          >
+            <ImageGenerationForm
+              onGenerate={handleGenerate}
+              isGenerating={generateImageMutation.isPending}
+            />
+          </aside>
+
+          {/* Right panel */}
+          <section className="space-y-5 animate-slide-up">
+            <ImageDisplay
+              imageUrl={generationResult.imageUrl ?? null}
+              isLoading={generateImageMutation.isPending}
+              error={generationResult.error ?? null}
+              prompt={generationResult.params?.prompt}
+              model={generationResult.params?.model}
+              aspectRatio={generationResult.params?.aspectRatio}
+              retryMessage={retryMessage}
+            />
+            <PromptHistory />
+          </section>
+        </div>
+      </main>
+
+      <Footer />
+      <Toaster richColors position="bottom-right" />
+    </div>
   );
 }
+
+// ─── Root app with providers ──────────────────────────────────────────────────
 
 export default function App() {
   return (

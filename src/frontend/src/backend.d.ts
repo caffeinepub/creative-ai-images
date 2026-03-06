@@ -7,15 +7,76 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
+export interface http_header {
+    value: string;
+    name: string;
+}
+export interface GenerateImageArgs {
+    model: string;
+    positivePrompt: string;
+    temperature: number;
+    seed: bigint;
+    negativePrompt: string;
+    aspectRatio: string;
+}
 export interface PoseCriteria {
     age: bigint;
     weight: number;
     height: number;
+    cameraAngle: string;
+    clothing: string;
+    situationFiguration: string;
+    situationPose: string;
+    lighting: string;
     artStyle: string;
+    environment: string;
+    cameraLens: string;
     ethnicity: string;
+    situationPosing: string;
     negativePrompt: string;
     bodyType: string;
+    composition: string;
+    situationBehavior: string;
+    aspectRatio: string;
+}
+export interface TransformationOutput {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
+}
+export type Time = bigint;
+export interface PromptHistory {
+    timestamp: Time;
+    criteria: PoseCriteria;
+    prompt: string;
+}
+export interface TransformationInput {
+    context: Uint8Array;
+    response: http_request_result;
+}
+export interface Preset {
+    name: string;
+    criteria: PoseCriteria;
+}
+export type GenerateImageResult = {
+    __kind__: "ok";
+    ok: string;
+} | {
+    __kind__: "err";
+    err: string;
+};
+export interface http_request_result {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
 }
 export interface backendInterface {
+    generateImage(args: GenerateImageArgs, apiKey: string, modelId: string): Promise<GenerateImageResult>;
+    getPresets(): Promise<Array<Preset>>;
+    getPromptHistory(): Promise<Array<PromptHistory>>;
+    getSituationBehaviors(): Promise<Array<string>>;
+    legacyGenerateImage(args: GenerateImageArgs): Promise<GenerateImageResult>;
+    savePreset(name: string, criteria: PoseCriteria): Promise<boolean>;
     sendQueries(arg0: PoseCriteria, combinations: string): Promise<string>;
+    transform(input: TransformationInput): Promise<TransformationOutput>;
 }
