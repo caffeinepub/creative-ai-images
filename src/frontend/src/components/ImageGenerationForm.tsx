@@ -84,6 +84,16 @@ const MODELS = [
     badge: "Dev",
   },
   {
+    label: "Stable Diffusion 3.5 Medium",
+    value: "stabilityai/stable-diffusion-3.5-medium",
+    badge: "SD 3.5",
+  },
+  {
+    label: "Stable Diffusion 3.5 Large",
+    value: "stabilityai/stable-diffusion-3.5-large",
+    badge: "SD 3.5 L",
+  },
+  {
     label: "Stable Diffusion XL",
     value: "stabilityai/stable-diffusion-xl-base-1.0",
     badge: null,
@@ -91,11 +101,6 @@ const MODELS = [
   {
     label: "Stable Diffusion 2.1",
     value: "stabilityai/stable-diffusion-2-1",
-    badge: null,
-  },
-  {
-    label: "Stable Diffusion v1.5",
-    value: "runwayml/stable-diffusion-v1-5",
     badge: null,
   },
   {
@@ -541,6 +546,11 @@ export default function ImageGenerationForm({
           {selectedModelInfo?.value.includes("FLUX") && (
             <p className="text-xs text-primary/70 leading-relaxed">
               FLUX.1-schnell: schnellste Generierung, Apache 2.0 Lizenz
+            </p>
+          )}
+          {selectedModelInfo?.value.includes("stable-diffusion-3.5") && (
+            <p className="text-xs text-amber-500/80 leading-relaxed">
+              SD 3.5: Hohe Qualität — benötigt HF-Token mit Modellzugriff
             </p>
           )}
         </div>

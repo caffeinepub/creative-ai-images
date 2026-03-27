@@ -85,8 +85,8 @@ actor {
 
   func getRandomModel(seed : Nat8) : Text {
     let models = [
-      "runwayml/stable-diffusion-v1-5",
       "stabilityai/stable-diffusion-xl-base-1.0",
+      "stabilityai/stable-diffusion-2-1",
     ];
     models[seed.toNat() % models.size()];
   };
@@ -143,7 +143,7 @@ actor {
     apiKey : Text,
     modelId : Text,
   ) : async GenerateImageResult {
-    let defaultModel = "runwayml/stable-diffusion-v1-5";
+    let defaultModel = "black-forest-labs/FLUX.1-schnell";
     let modelIdToUse = if (modelId == "") { defaultModel } else { modelId };
 
     let finalModelId = if (args.model == "random_model") {
@@ -174,7 +174,7 @@ actor {
     };
 
     let modelId = switch (getEnvironmentVariable("HF_MODEL")) {
-      case (null) { "runwayml/stable-diffusion-v1-5" };
+      case (null) { "black-forest-labs/FLUX.1-schnell" };
       case (?id) { id };
     };
 
