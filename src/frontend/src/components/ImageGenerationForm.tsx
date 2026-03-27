@@ -73,17 +73,37 @@ const ASPECT_RATIOS = [
 ];
 
 const MODELS = [
-  { label: "Stable Diffusion v1.5", value: "runwayml/stable-diffusion-v1-5" },
+  {
+    label: "FLUX.1 Schnell ⚡ (Empfohlen)",
+    value: "black-forest-labs/FLUX.1-schnell",
+    badge: "Schnell",
+  },
+  {
+    label: "FLUX.1 Dev (Höhere Qualität)",
+    value: "black-forest-labs/FLUX.1-dev",
+    badge: "Dev",
+  },
   {
     label: "Stable Diffusion XL",
     value: "stabilityai/stable-diffusion-xl-base-1.0",
+    badge: null,
   },
-  { label: "Dreamshaper 8", value: "Lykon/dreamshaper-8" },
   {
-    label: "Realistic Vision V6",
-    value: "SG161222/Realistic_Vision_V6.0_B1_noVAE",
+    label: "Stable Diffusion 2.1",
+    value: "stabilityai/stable-diffusion-2-1",
+    badge: null,
   },
-  { label: "Random Model", value: "random_model" },
+  {
+    label: "Stable Diffusion v1.5",
+    value: "runwayml/stable-diffusion-v1-5",
+    badge: null,
+  },
+  {
+    label: "SD v1.4 (Fallback)",
+    value: "CompVis/stable-diffusion-v1-4",
+    badge: null,
+  },
+  { label: "Random Model", value: "random_model", badge: null },
 ];
 
 const BODY_TYPES = [
@@ -198,6 +218,7 @@ const LIGHTING_OPTIONS = [
   "Candlelight",
   "Moonlight",
   "Backlit silhouette",
+  "Dramatic chiaroscuro",
 ];
 
 const COMPOSITIONS = [
@@ -309,10 +330,10 @@ export default function ImageGenerationForm({
   );
   const [showToken, setShowToken] = useState(false);
 
-  // Style & Model
+  // Style & Model — default to FLUX.1-schnell
   const [artStyle, setArtStyle] = useState("Photorealistic");
   const [aspectRatio, setAspectRatio] = useState("1:1");
-  const [model, setModel] = useState("runwayml/stable-diffusion-v1-5");
+  const [model, setModel] = useState("black-forest-labs/FLUX.1-schnell");
   const [negativePreset, setNegativePreset] =
     useState<NegativePromptPreset>("Default Safe");
   const [customNegative, setCustomNegative] = useState("");
@@ -404,6 +425,7 @@ export default function ImageGenerationForm({
   ]);
 
   const prompt = buildPrompt();
+  const selectedModelInfo = MODELS.find((m) => m.value === model);
 
   return (
     <div className="space-y-3">
@@ -485,18 +507,43 @@ export default function ImageGenerationForm({
           ))}
         </FieldSelect>
 
-        <FieldSelect
-          label="AI Model"
-          value={model}
-          onValueChange={setModel}
-          ocid="form.model.select"
-        >
-          {MODELS.map((m) => (
-            <SelectItem key={m.value} value={m.value}>
-              {m.label}
-            </SelectItem>
-          ))}
-        </FieldSelect>
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">AI Model</Label>
+          <Select value={model} onValueChange={setModel}>
+            <SelectTrigger
+              data-ocid="form.model.select"
+              className="bg-background/40 border-border/30 text-sm h-9 focus:ring-ring/50"
+            >
+              <SelectValue placeholder="Select model" />
+            </SelectTrigger>
+            <SelectContent
+              position="popper"
+              sideOffset={4}
+              className="z-[99999]"
+            >
+              {MODELS.map((m) => (
+                <SelectItem key={m.value} value={m.value}>
+                  <span className="flex items-center gap-2">
+                    {m.label}
+                    {m.badge && (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 py-0 h-4"
+                      >
+                        {m.badge}
+                      </Badge>
+                    )}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedModelInfo?.value.includes("FLUX") && (
+            <p className="text-xs text-primary/70 leading-relaxed">
+              FLUX.1-schnell: schnellste Generierung, Apache 2.0 Lizenz
+            </p>
+          )}
+        </div>
 
         <FieldSelect
           label="Negative Prompt Preset"
