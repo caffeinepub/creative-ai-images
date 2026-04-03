@@ -127,6 +127,15 @@ function getFriendlyError(error: string): FriendlyError {
     };
   }
 
+  if (error.includes("timed out") || error.includes("timeout")) {
+    return {
+      title: "Request Timed Out",
+      message:
+        "The model took too long to respond. FLUX.1-schnell can be slow on the free tier during peak hours.",
+      hint: "Try switching to 'Stable Diffusion 2.1' in the model selector — it's faster and more reliable on the free tier.",
+    };
+  }
+
   const displayMessage = error.startsWith("Generation failed: ")
     ? error.slice("Generation failed: ".length)
     : error;

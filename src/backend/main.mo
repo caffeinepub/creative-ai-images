@@ -8,9 +8,6 @@ import Nat8 "mo:core/Nat8";
 import Error "mo:core/Error";
 import Text "mo:core/Text";
 import Map "mo:core/Map";
-import Nat32 "mo:core/Nat32";
-import Blob "mo:core/Blob";
-import Runtime "mo:core/Runtime";
 import MixinStorage "blob-storage/Mixin";
 
 actor {
@@ -67,12 +64,8 @@ actor {
 
   include MixinStorage();
 
-  public query ({ caller }) func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
+  public query func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
     OutCall.transform(input);
-  };
-
-  func makeGetOutcall(url : Text) : async Text {
-    await OutCall.httpGetRequest(url, [], transform);
   };
 
   func buildHFEndpoint(modelId : Text) : Text {
@@ -83,18 +76,18 @@ actor {
     };
   };
 
+  let fallbackModels : [Text] = [
+    "stabilityai/stable-diffusion-2-1",
+    "stabilityai/stable-diffusion-xl-base-1.0",
+    "black-forest-labs/FLUX.1-schnell",
+  ];
+
   func getRandomModel(seed : Nat8) : Text {
-    let models = [
-      "stabilityai/stable-diffusion-xl-base-1.0",
-      "stabilityai/stable-diffusion-2-1",
-    ];
-    models[seed.toNat() % models.size()];
+    fallbackModels[seed.toNat() % fallbackModels.size()];
   };
 
   func getAuthorizationHeader(apiKey : Text) : OutCall.Header {
-    let prefix = "Bearer ";
-    let fullKey = prefix # apiKey;
-    { name = "Authorization"; value = fullKey };
+    { name = "Authorization"; value = "Bearer " # apiKey };
   };
 
   func makeContentTypeHeader() : OutCall.Header {
@@ -104,23 +97,32 @@ actor {
   func fetchImageData(endpoint : Text, positivePrompt : Text, negativePrompt : Text, apiKey : Text) : async GenerateImageResult {
     let requestBody = "{\"inputs\": \"" # positivePrompt # "\", \"parameters\": { \"negative_prompt\": \"" # negativePrompt # "\" }}";
     let headers = [getAuthorizationHeader(apiKey), makeContentTypeHeader()];
-
     try {
       let response = await OutCall.httpPostRequest(endpoint, headers, requestBody, transform);
       #ok(response);
     } catch (error : Error.Error) {
-      #err("Error calling " # endpoint # ": " # error.message());
+      let msg = error.message();
+      if (msg.contains(#text("timed out")) or msg.contains(#text("timeout"))) {
+        #err("Request timed out. The model is busy or warming up. Please try again or switch to a faster model like 'Stable Diffusion 2.1'.");
+      } else {
+        #err("Error calling " # endpoint # ": " # msg);
+      };
     };
   };
 
   func parseResponse(response : Text) : (Bool, Text) {
-    let dataUriPrefix = "data:image/jpeg;base64,";
-    if (response.startsWith(#text(dataUriPrefix))) {
+    let dataUriPrefixJpeg = "data:image/jpeg;base64,";
+    let dataUriPrefixPng = "data:image/png;base64,";
+    if (response.startsWith(#text(dataUriPrefixJpeg)) or response.startsWith(#text(dataUriPrefixPng))) {
       (true, response);
     } else if (response.startsWith(#text("/9j/"))) {
-      (true, dataUriPrefix # response);
+      (true, dataUriPrefixJpeg # response);
     } else if (response.startsWith(#text("iVBORw0KGgo"))) {
-      (true, "data:image/png;base64," # response);
+      (true, dataUriPrefixPng # response);
+    } else if (response.contains(#text("error")) and response.contains(#text("503"))) {
+      (false, "Server overloaded (503). Try again in a moment or switch to a different model.");
+    } else if (response.contains(#text("\"error\""))) {
+      (false, "Unexpected response from the image generation service: " # response);
     } else {
       (false, "Unexpected response format: " # response);
     };
@@ -130,20 +132,12 @@ actor {
     environmentVariables.get(key);
   };
 
-  func nat32ToText(n : Nat32) : Text {
-    n.toText();
-  };
-
-  func blobToText(blob : Blob) : Text {
-    blob.toArray().toText();
-  };
-
-  public shared ({ caller }) func generateImage(
+  public shared func generateImage(
     args : GenerateImageArgs,
     apiKey : Text,
     modelId : Text,
   ) : async GenerateImageResult {
-    let defaultModel = "black-forest-labs/FLUX.1-schnell";
+    let defaultModel = "stabilityai/stable-diffusion-2-1";
     let modelIdToUse = if (modelId == "") { defaultModel } else { modelId };
 
     let finalModelId = if (args.model == "random_model") {
@@ -162,19 +156,17 @@ actor {
     };
   };
 
-  public shared ({ caller }) func legacyGenerateImage(args : GenerateImageArgs) : async GenerateImageResult {
+  public shared func legacyGenerateImage(args : GenerateImageArgs) : async GenerateImageResult {
     let apiKey = switch (getEnvironmentVariable("HF_TOKEN")) {
       case (null) { return #err("Error: HF_TOKEN not set") };
       case (?key) {
-        if (key == "") {
-          return #err("Error: HF_TOKEN is empty");
-        };
+        if (key == "") { return #err("Error: HF_TOKEN is empty") };
         key;
       };
     };
 
     let modelId = switch (getEnvironmentVariable("HF_MODEL")) {
-      case (null) { "black-forest-labs/FLUX.1-schnell" };
+      case (null) { "stabilityai/stable-diffusion-2-1" };
       case (?id) { id };
     };
 
@@ -194,53 +186,37 @@ actor {
     };
   };
 
-  public shared ({ caller }) func sendQueries(_ : PoseCriteria, combinations : Text) : async Text {
+  public shared func sendQueries(_ : PoseCriteria, combinations : Text) : async Text {
     poseCriteriaSet.add(combinations);
     let historyEntry : PromptHistory = {
       prompt = combinations;
       timestamp = Time.now();
       criteria = {
-        bodyType = "";
-        age = 0;
-        ethnicity = "";
-        artStyle = "";
-        height = 0.0;
-        weight = 0.0;
-        negativePrompt = "";
-        aspectRatio = "";
-        cameraLens = "";
-        clothing = "";
-        situationPose = "";
-        situationFiguration = "";
-        situationBehavior = "";
-        situationPosing = "";
-        cameraAngle = "";
-        lighting = "";
-        environment = "";
-        composition = "";
+        bodyType = ""; age = 0; ethnicity = ""; artStyle = "";
+        height = 0.0; weight = 0.0; negativePrompt = ""; aspectRatio = "";
+        cameraLens = ""; clothing = ""; situationPose = ""; situationFiguration = "";
+        situationBehavior = ""; situationPosing = ""; cameraAngle = "";
+        lighting = ""; environment = ""; composition = "";
       };
     };
     promptHistoryList.add(historyEntry);
     combinations;
   };
 
-  public shared ({ caller }) func savePreset(name : Text, criteria : PoseCriteria) : async Bool {
-    presetsList.add({
-      name;
-      criteria;
-    });
+  public shared func savePreset(name : Text, criteria : PoseCriteria) : async Bool {
+    presetsList.add({ name; criteria });
     true;
   };
 
-  public query ({ caller }) func getPresets() : async [Preset] {
+  public query func getPresets() : async [Preset] {
     presetsList.toArray();
   };
 
-  public query ({ caller }) func getPromptHistory() : async [PromptHistory] {
+  public query func getPromptHistory() : async [PromptHistory] {
     promptHistoryList.toArray();
   };
 
-  public query ({ caller }) func getSituationBehaviors() : async [Text] {
+  public query func getSituationBehaviors() : async [Text] {
     [
       "gazing wistfully into distance, gentle smile, serene contemplation",
       "laughing joyfully while twirling, carefree and energetic",

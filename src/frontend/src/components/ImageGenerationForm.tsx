@@ -72,43 +72,50 @@ const ASPECT_RATIOS = [
   { label: "21:9 Ultra Wide", value: "21:9" },
 ];
 
+// Only truly free models:
+// - FLUX.1-schnell: Apache 2.0 (Black Forest Labs) ✅
+// - SD 2.1: Apache 2.0 (Stability AI) ✅
+// - SD XL Base 1.0: CreativeML OpenRAIL++-M ✅
+// - SD v1.5: CreativeML OpenRAIL-M (RunwayML) ✅
+// - SD v1.4: CreativeML OpenRAIL-M (CompVis) ✅
+// NOT included: FLUX.1-dev (non-commercial), SD 3.5 (requires license acceptance)
 const MODELS = [
   {
-    label: "FLUX.1 Schnell ⚡ (Empfohlen)",
+    label: "FLUX.1 Schnell — Beste Qualität, Apache 2.0 frei",
     value: "black-forest-labs/FLUX.1-schnell",
-    badge: "Schnell",
+    badge: "⚡ Empfohlen",
+    license: "Apache 2.0",
   },
   {
-    label: "FLUX.1 Dev (Höhere Qualität)",
-    value: "black-forest-labs/FLUX.1-dev",
-    badge: "Dev",
-  },
-  {
-    label: "Stable Diffusion 3.5 Medium",
-    value: "stabilityai/stable-diffusion-3.5-medium",
-    badge: "SD 3.5",
-  },
-  {
-    label: "Stable Diffusion 3.5 Large",
-    value: "stabilityai/stable-diffusion-3.5-large",
-    badge: "SD 3.5 L",
-  },
-  {
-    label: "Stable Diffusion XL",
-    value: "stabilityai/stable-diffusion-xl-base-1.0",
-    badge: null,
-  },
-  {
-    label: "Stable Diffusion 2.1",
+    label: "Stable Diffusion 2.1 — Schnell & zuverlässig",
     value: "stabilityai/stable-diffusion-2-1",
-    badge: null,
+    badge: "Apache 2.0",
+    license: "Apache 2.0",
   },
   {
-    label: "SD v1.4 (Fallback)",
-    value: "CompVis/stable-diffusion-v1-4",
-    badge: null,
+    label: "Stable Diffusion XL Base 1.0",
+    value: "stabilityai/stable-diffusion-xl-base-1.0",
+    badge: "OpenRAIL",
+    license: "OpenRAIL++-M",
   },
-  { label: "Random Model", value: "random_model", badge: null },
+  {
+    label: "Stable Diffusion v1.5 (RunwayML)",
+    value: "runwayml/stable-diffusion-v1-5",
+    badge: "OpenRAIL",
+    license: "OpenRAIL-M",
+  },
+  {
+    label: "Stable Diffusion v1.4 (CompVis)",
+    value: "CompVis/stable-diffusion-v1-4",
+    badge: "OpenRAIL",
+    license: "OpenRAIL-M",
+  },
+  {
+    label: "Random (eines der obigen)",
+    value: "random_model",
+    badge: null,
+    license: null,
+  },
 ];
 
 const BODY_TYPES = [
@@ -250,7 +257,6 @@ const SITUATION_BEHAVIORS = [
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-/** Short display label for a long behavior string */
 function behaviorLabel(behavior: string): string {
   const firstPhrase = behavior.split(",")[0];
   return firstPhrase.charAt(0).toUpperCase() + firstPhrase.slice(1);
@@ -335,7 +341,7 @@ export default function ImageGenerationForm({
   );
   const [showToken, setShowToken] = useState(false);
 
-  // Style & Model — default to FLUX.1-schnell
+  // Style & Model — default to FLUX.1-schnell (Apache 2.0, truly free)
   const [artStyle, setArtStyle] = useState("Photorealistic");
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [model, setModel] = useState("black-forest-labs/FLUX.1-schnell");
@@ -543,14 +549,19 @@ export default function ImageGenerationForm({
               ))}
             </SelectContent>
           </Select>
-          {selectedModelInfo?.value.includes("FLUX") && (
-            <p className="text-xs text-primary/70 leading-relaxed">
-              FLUX.1-schnell: schnellste Generierung, Apache 2.0 Lizenz
+          {selectedModelInfo?.license && (
+            <p className="text-xs text-emerald-500/80 leading-relaxed">
+              Lizenz: {selectedModelInfo.license} — kostenlos nutzbar
             </p>
           )}
-          {selectedModelInfo?.value.includes("stable-diffusion-3.5") && (
-            <p className="text-xs text-amber-500/80 leading-relaxed">
-              SD 3.5: Hohe Qualität — benötigt HF-Token mit Modellzugriff
+          {selectedModelInfo?.value === "black-forest-labs/FLUX.1-schnell" && (
+            <p className="text-xs text-primary/70 leading-relaxed">
+              FLUX.1-schnell: Beste Qualität auf dem Free-Tier (Apache 2.0)
+            </p>
+          )}
+          {selectedModelInfo?.value === "stabilityai/stable-diffusion-2-1" && (
+            <p className="text-xs text-primary/70 leading-relaxed">
+              SD 2.1: Schnellstes Modell, ideal bei Server-Auslastung
             </p>
           )}
         </div>
