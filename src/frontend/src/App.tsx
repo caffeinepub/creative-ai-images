@@ -26,18 +26,15 @@ export interface GenerationParams {
   prompt: string;
 }
 
-// ─── QueryClient (module-level singleton, outside React tree) ─────────────────
+// ─── QueryClient singleton ────────────────────────────────────────────────────
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: {
-      staleTime: 30_000,
-      retry: 1,
-    },
+    queries: { staleTime: 30_000, retry: 1 },
   },
 });
 
-// ─── Inner content (needs QueryClient context) ────────────────────────────────
+// ─── Inner content ────────────────────────────────────────────────────────────
 
 function AppContent() {
   const [generationResult, setGenerationResult] = useState<{
@@ -87,9 +84,9 @@ function AppContent() {
       <Header />
 
       <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
-        {/* Hero section */}
+        {/* Hero */}
         <section className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/20 bg-primary/8 text-primary text-xs font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-medium mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             AI-Powered Prompt Generator
           </div>
@@ -104,7 +101,7 @@ function AppContent() {
 
         {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-5 items-start">
-          {/* Left panel — sticky, scrollable, overflow-x-visible for dropdown portals */}
+          {/* Left panel — sticky, scrollable, overflow-x-visible for Radix portals */}
           <aside
             className="lg:sticky lg:top-[4.5rem] lg:max-h-[calc(100vh-5.5rem)] lg:overflow-y-auto lg:overflow-x-visible scrollbar-thin"
             style={{ position: "relative" }}
@@ -116,7 +113,10 @@ function AppContent() {
           </aside>
 
           {/* Right panel */}
-          <section className="space-y-5 animate-slide-up">
+          <section
+            className="space-y-5 animate-slide-up"
+            data-ocid="main-content"
+          >
             <ImageDisplay
               imageUrl={generationResult.imageUrl ?? null}
               isLoading={generateImageMutation.isPending}
@@ -137,7 +137,7 @@ function AppContent() {
   );
 }
 
-// ─── Root app with providers ──────────────────────────────────────────────────
+// ─── Root with providers ──────────────────────────────────────────────────────
 
 export default function App() {
   return (

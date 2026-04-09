@@ -1,0 +1,78 @@
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec Header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: record {
+               body: blob;
+               headers: vec Header;
+               status: nat;
+             };
+ };
+type Time = int;
+type PromptHistory = 
+ record {
+   criteria: PoseCriteria;
+   prompt: text;
+   timestamp: Time;
+ };
+type Preset = 
+ record {
+   criteria: PoseCriteria;
+   name: text;
+ };
+type PoseCriteria = 
+ record {
+   age: nat;
+   artStyle: text;
+   aspectRatio: text;
+   bodyType: text;
+   cameraAngle: text;
+   cameraLens: text;
+   clothing: text;
+   composition: text;
+   environment: text;
+   ethnicity: text;
+   height: float64;
+   lighting: text;
+   negativePrompt: text;
+   situationBehavior: text;
+   situationFiguration: text;
+   situationPose: text;
+   situationPosing: text;
+   weight: float64;
+ };
+type Header = 
+ record {
+   name: text;
+   value: text;
+ };
+type GenerateImageResult = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type GenerateImageArgs = 
+ record {
+   aspectRatio: text;
+   model: text;
+   negativePrompt: text;
+   positivePrompt: text;
+   seed: int;
+   temperature: float64;
+ };
+service : {
+  generateImage: (args: GenerateImageArgs, apiKey: text, modelId: text) ->
+   (GenerateImageResult);
+  getPresets: () -> (vec Preset) query;
+  getPromptHistory: () -> (vec PromptHistory) query;
+  getSituationBehaviors: () -> (vec text) query;
+  legacyGenerateImage: (args: GenerateImageArgs) -> (GenerateImageResult);
+  savePreset: (name: text, criteria: PoseCriteria) -> (bool);
+  sendQueries: (PoseCriteria, combinations: text) -> (text);
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+}

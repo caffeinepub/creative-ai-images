@@ -1,9 +1,10 @@
+import { InternetIdentityProvider } from "@caffeineai/core-infrastructure";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { InternetIdentityProvider } from "./hooks/useInternetIdentity";
 import "./index.css";
 
+// Allow BigInt to serialize in JSON (needed for ICP responses)
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };

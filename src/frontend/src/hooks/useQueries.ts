@@ -2,11 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { GenerateImageArgs, PoseCriteria } from "../backend";
 import { useActor } from "./useActor";
 
-// ─── Fallback model list ──────────────────────────────────────────────────────
+// ─── Fallback model list (truly free, Apache 2.0 or OpenRAIL) ────────────────
 
-const FALLBACK_MODELS = [
-  "runwayml/stable-diffusion-v1-5",
+export const FALLBACK_MODELS = [
   "stabilityai/stable-diffusion-2-1",
+  "stabilityai/stable-diffusion-xl-base-1.0",
   "CompVis/stable-diffusion-v1-4",
 ];
 
@@ -74,7 +74,7 @@ export function parseGenerateImageResponse(
   // 2. Try JSON
   if (response.startsWith("{")) {
     try {
-      const json = JSON.parse(response);
+      const json = JSON.parse(response) as Record<string, unknown>;
 
       if (json.imageUrl && typeof json.imageUrl === "string") {
         return { imageUrl: json.imageUrl, error: null };
@@ -104,18 +104,18 @@ export function parseGenerateImageResponse(
         if (status === 401 || String(status) === "401") {
           return {
             imageUrl: null,
-            error: `HF_REQUEST_FAILED:401:${detail}`,
+            error: `HF_REQUEST_FAILED:401:${String(detail)}`,
           };
         }
         if (status === 503 || String(status) === "503") {
           return {
             imageUrl: null,
-            error: `HF_REQUEST_FAILED:503:${detail}`,
+            error: `HF_REQUEST_FAILED:503:${String(detail)}`,
           };
         }
         return {
           imageUrl: null,
-          error: `HF_REQUEST_FAILED:${status}:${detail}`,
+          error: `HF_REQUEST_FAILED:${String(status)}:${String(detail)}`,
         };
       }
     } catch {
@@ -261,7 +261,7 @@ export function useGenerateImage(options: UseGenerateImageOptions = {}) {
         model,
       });
 
-      // Initial attempt with requested model
+      // Initial attempt with the selected model
       const firstResponse = await actor.generateImage(
         buildArgs(input.model),
         input.apiToken,
@@ -273,16 +273,16 @@ export function useGenerateImage(options: UseGenerateImageOptions = {}) {
           ? parseGenerateImageResponse(firstResponse.err)
           : parseGenerateImageResponse(firstResponse.ok);
 
-      // If not overloaded, return immediately
+      // If successful or not an overload error, return immediately
       if (!isOverloadError(result)) return result;
 
-      // Fallback loop through alternative models, skipping the one already tried
+      // Fallback loop through alternative models (skip the one already tried)
       const triedModel = input.model;
       for (const fallbackModel of FALLBACK_MODELS) {
         if (fallbackModel === triedModel) continue;
 
         onRetry?.(
-          `Modell überlastet, versuche Fallback-Modell: ${fallbackModel}`,
+          `Model overloaded — trying fallback: ${fallbackModel.split("/").pop()}`,
         );
 
         const fallbackResponse = await actor.generateImage(
@@ -300,7 +300,7 @@ export function useGenerateImage(options: UseGenerateImageOptions = {}) {
           return fallbackResult;
         }
 
-        // If this fallback is also overloaded, keep trying; otherwise stop
+        // If this fallback also failed with overload, keep trying
         if (!isOverloadError(fallbackResult)) {
           result = fallbackResult;
           break;
@@ -309,11 +309,11 @@ export function useGenerateImage(options: UseGenerateImageOptions = {}) {
         result = fallbackResult;
       }
 
-      // All models exhausted — return with a clear message
+      // All models exhausted — return with clear message
       return {
         imageUrl: null,
         error:
-          "Alle Modelle sind gerade überlastet. Bitte in ein paar Minuten erneut versuchen.",
+          "HF_REQUEST_FAILED:503:All models are currently overloaded. Please try again in a few minutes.",
       };
     },
   });

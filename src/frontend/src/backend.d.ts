@@ -7,17 +7,9 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface http_header {
+export interface Header {
     value: string;
     name: string;
-}
-export interface GenerateImageArgs {
-    model: string;
-    positivePrompt: string;
-    temperature: number;
-    seed: bigint;
-    negativePrompt: string;
-    aspectRatio: string;
 }
 export interface PoseCriteria {
     age: bigint;
@@ -39,12 +31,12 @@ export interface PoseCriteria {
     situationBehavior: string;
     aspectRatio: string;
 }
+export type Time = bigint;
 export interface TransformationOutput {
     status: bigint;
     body: Uint8Array;
-    headers: Array<http_header>;
+    headers: Array<Header>;
 }
-export type Time = bigint;
 export interface PromptHistory {
     timestamp: Time;
     criteria: PoseCriteria;
@@ -52,7 +44,11 @@ export interface PromptHistory {
 }
 export interface TransformationInput {
     context: Uint8Array;
-    response: http_request_result;
+    response: {
+        status: bigint;
+        body: Uint8Array;
+        headers: Array<Header>;
+    };
 }
 export interface Preset {
     name: string;
@@ -65,10 +61,13 @@ export type GenerateImageResult = {
     __kind__: "err";
     err: string;
 };
-export interface http_request_result {
-    status: bigint;
-    body: Uint8Array;
-    headers: Array<http_header>;
+export interface GenerateImageArgs {
+    model: string;
+    positivePrompt: string;
+    temperature: number;
+    seed: bigint;
+    negativePrompt: string;
+    aspectRatio: string;
 }
 export interface backendInterface {
     generateImage(args: GenerateImageArgs, apiKey: string, modelId: string): Promise<GenerateImageResult>;

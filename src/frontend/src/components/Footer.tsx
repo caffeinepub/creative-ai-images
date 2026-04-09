@@ -8,7 +8,7 @@ export default function Footer() {
       : "ai-image-studio";
 
   return (
-    <footer className="mt-auto border-t border-border/30 bg-background/70 backdrop-blur-sm">
+    <footer className="mt-auto border-t border-border/30 bg-card/40 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-5">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 text-xs text-muted-foreground">
           <span>© {currentYear} AI Image Studio.</span>

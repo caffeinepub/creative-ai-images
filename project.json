@@ -1,0 +1,25 @@
+{
+  "overview": "AI Image Studio is a creative image generation app powered by Hugging Face's free AI models. Build detailed prompts with controls for body type, clothing styles (including beachwear, swimwear, bikini), emotions with intensity levels, camera settings, lighting presets (including beach/tropical), and more. Features automatic fallback between free models when servers are busy.",
+  "features": [
+    "Hugging Face API integration with FLUX.1-schnell as default model",
+    "Comprehensive prompt generator with 15+ control categories",
+    "Clothing styles including beachwear, swimwear, bikini, sarong, sun dress",
+    "Beach and tropical lighting and environment presets",
+    "Emotions with 3 intensity levels (subtle, moderate, intense)",
+    "Automatic model fallback on server overload (503 errors)",
+    "512x512 JPEG output optimized for Internet Computer limits",
+    "Prompt history and reusable preset management",
+    "Dark mode design with rose-gold and teal accents",
+    "Strict no-NSFW policy"
+  ],
+  "category": "creative-tools",
+  "tags": [
+    "ai",
+    "image-generation",
+    "hugging-face",
+    "prompt-generator",
+    "stable-diffusion",
+    "flux"
+  ],
+  "last_updated": "2026-04-08T19:27:29.657Z"
+}

@@ -80,7 +80,10 @@ export default function PromptHistory() {
                 Loading history…
               </div>
             ) : sortedHistory.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 gap-2.5 text-muted-foreground">
+              <div
+                data-ocid="history.empty_state"
+                className="flex flex-col items-center justify-center py-8 gap-2.5 text-muted-foreground"
+              >
                 <div className="w-10 h-10 rounded-xl bg-muted/20 flex items-center justify-center">
                   <History className="w-5 h-5 opacity-30" />
                 </div>
@@ -95,10 +98,11 @@ export default function PromptHistory() {
                   {sortedHistory.map((entry) => (
                     <div
                       key={`${String(entry.timestamp)}-${entry.prompt.slice(0, 16)}`}
+                      data-ocid="history.item"
                       className="rounded-lg border border-border/30 bg-background/30 p-3 space-y-2 hover:border-primary/25 hover:bg-primary/4 transition-all duration-150"
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm text-foreground/85 leading-relaxed flex-1 line-clamp-2 font-mono">
+                        <p className="text-sm text-foreground/85 leading-relaxed flex-1 min-w-0 line-clamp-2 font-mono break-words">
                           {entry.prompt}
                         </p>
                         <Button
@@ -107,6 +111,7 @@ export default function PromptHistory() {
                           className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-primary hover:bg-primary/10"
                           onClick={() => handleCopy(entry.prompt)}
                           title="Copy prompt"
+                          aria-label="Copy prompt to clipboard"
                         >
                           <Copy className="w-3.5 h-3.5" />
                         </Button>

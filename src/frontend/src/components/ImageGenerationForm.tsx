@@ -25,6 +25,8 @@ import {
 } from "@/constants/negativePrompts";
 import {
   Camera,
+  Check,
+  ClipboardCopy,
   ExternalLink,
   Eye,
   EyeOff,
@@ -38,12 +40,15 @@ import {
   Wand2,
 } from "lucide-react";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 
 // ─── Data constants ───────────────────────────────────────────────────────────
 
 const ART_STYLES = [
   "Photorealistic",
+  "Photography",
   "Digital Art",
+  "Illustration",
   "Oil Painting",
   "Watercolor",
   "Sketch",
@@ -52,7 +57,6 @@ const ART_STYLES = [
   "Anime",
   "Comic Book",
   "Cartoon",
-  "Caricature",
   "Cinematic",
   "Fantasy Art",
   "Impressionist",
@@ -72,22 +76,20 @@ const ASPECT_RATIOS = [
   { label: "21:9 Ultra Wide", value: "21:9" },
 ];
 
-// Only truly free models:
-// - FLUX.1-schnell: Apache 2.0 (Black Forest Labs) ✅
-// - SD 2.1: Apache 2.0 (Stability AI) ✅
-// - SD XL Base 1.0: CreativeML OpenRAIL++-M ✅
-// - SD v1.5: CreativeML OpenRAIL-M (RunwayML) ✅
-// - SD v1.4: CreativeML OpenRAIL-M (CompVis) ✅
-// NOT included: FLUX.1-dev (non-commercial), SD 3.5 (requires license acceptance)
+// Truly free models only:
+// FLUX.1-schnell: Apache 2.0 ✅ | SD 2.1: Apache 2.0 ✅
+// SD XL: CreativeML OpenRAIL++-M ✅ | SD v1.5: CreativeML OpenRAIL-M ✅
+// SD v1.4: CreativeML OpenRAIL-M ✅
+// NOT included: FLUX.1-dev (non-commercial), SD 3.5 (requires license)
 const MODELS = [
   {
-    label: "FLUX.1 Schnell — Beste Qualität, Apache 2.0 frei",
+    label: "FLUX.1 Schnell — Best Quality",
     value: "black-forest-labs/FLUX.1-schnell",
-    badge: "⚡ Empfohlen",
+    badge: "⚡ Recommended",
     license: "Apache 2.0",
   },
   {
-    label: "Stable Diffusion 2.1 — Schnell & zuverlässig",
+    label: "Stable Diffusion 2.1 — Fast & Reliable",
     value: "stabilityai/stable-diffusion-2-1",
     badge: "Apache 2.0",
     license: "Apache 2.0",
@@ -111,7 +113,7 @@ const MODELS = [
     license: "OpenRAIL-M",
   },
   {
-    label: "Random (eines der obigen)",
+    label: "Random (one of the above)",
     value: "random_model",
     badge: null,
     license: null,
@@ -158,6 +160,8 @@ const CLOTHING_STYLES = [
   "Bikini",
   "Sarong",
   "Sun dress",
+  "Streetwear",
+  "Business",
 ];
 
 const ENVIRONMENTS = [
@@ -171,6 +175,8 @@ const ENVIRONMENTS = [
   "Poolside",
   "Tropical resort pool",
   "Beach volleyball court",
+  "Island paradise",
+  "Resort",
   "Coral reef underwater",
   "Mountain",
   "Desert",
@@ -184,8 +190,6 @@ const ENVIRONMENTS = [
   "Garden",
   "Industrial",
   "Park",
-  "Bedroom",
-  "Shower",
   "Balcony",
 ];
 
@@ -194,11 +198,14 @@ const CAMERA_LENSES = [
   "35mm",
   "50mm",
   "85mm",
+  "85mm portrait f/1.4",
   "135mm",
   "Fisheye",
   "Macro",
   "Telephoto 200mm",
   "Tilt-shift",
+  "Leica Portrait Mode",
+  "Ultra-wide",
 ];
 
 const CAMERA_ANGLES = [
@@ -206,7 +213,9 @@ const CAMERA_ANGLES = [
   "Low angle",
   "High angle",
   "Bird's eye view",
+  "Worm's eye",
   "Dutch angle",
+  "Overhead",
   "Over the shoulder",
   "Close-up",
   "Extreme close-up",
@@ -218,14 +227,17 @@ const LIGHTING_OPTIONS = [
   "Natural daylight",
   "Golden hour",
   "Blue hour",
+  "Beach sunrise",
   "Tropical sunlight",
   "Sun-drenched",
   "Sunset glow over water",
   "Bright midday sun",
   "Soft beach haze",
+  "Overcast",
   "Studio lighting",
   "Dramatic shadows",
   "Soft diffused",
+  "Soft box",
   "Neon lights",
   "Candlelight",
   "Moonlight",
@@ -253,6 +265,9 @@ const SITUATION_BEHAVIORS = [
   "stretching arms wide, embracing the world, full of energy",
   "running through open space, hair flowing, joyful movement",
   "curled up reading, cozy and absorbed, soft candlelight",
+  "walking confidently, head held high, purposeful stride",
+  "dancing freely, arms outstretched, expressive movement",
+  "looking over shoulder, mysterious glance, intriguing pose",
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -321,6 +336,7 @@ function FieldSelect({
         >
           <SelectValue placeholder={placeholder ?? label} />
         </SelectTrigger>
+        {/* z-[99999] ensures portal dropdown always renders above sticky sidebar */}
         <SelectContent position="popper" sideOffset={4} className="z-[99999]">
           {children}
         </SelectContent>
@@ -345,6 +361,8 @@ export default function ImageGenerationForm({
   const [artStyle, setArtStyle] = useState("Photorealistic");
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [model, setModel] = useState("black-forest-labs/FLUX.1-schnell");
+
+  // Negative prompts
   const [negativePreset, setNegativePreset] =
     useState<NegativePromptPreset>("Default Safe");
   const [customNegative, setCustomNegative] = useState("");
@@ -370,6 +388,9 @@ export default function ImageGenerationForm({
 
   // Situation
   const [situationBehavior, setSituationBehavior] = useState("");
+
+  // Copy state
+  const [promptCopied, setPromptCopied] = useState(false);
 
   // ── Handlers ─────────────────────────────────────────────────────────────
 
@@ -410,6 +431,16 @@ export default function ImageGenerationForm({
     selectedIntensity,
     situationBehavior,
   ]);
+
+  const handleCopyPrompt = useCallback(() => {
+    const prompt = buildPrompt();
+    if (!prompt) return;
+    navigator.clipboard.writeText(prompt).then(() => {
+      setPromptCopied(true);
+      toast.success("Prompt copied to clipboard!");
+      setTimeout(() => setPromptCopied(false), 2000);
+    });
+  }, [buildPrompt]);
 
   const handleGenerate = useCallback(() => {
     const negativePrompt = customNegative.trim()
@@ -551,43 +582,19 @@ export default function ImageGenerationForm({
           </Select>
           {selectedModelInfo?.license && (
             <p className="text-xs text-emerald-500/80 leading-relaxed">
-              Lizenz: {selectedModelInfo.license} — kostenlos nutzbar
+              License: {selectedModelInfo.license} — free to use
             </p>
           )}
           {selectedModelInfo?.value === "black-forest-labs/FLUX.1-schnell" && (
             <p className="text-xs text-primary/70 leading-relaxed">
-              FLUX.1-schnell: Beste Qualität auf dem Free-Tier (Apache 2.0)
+              FLUX.1-schnell: Best quality on Free-Tier (Apache 2.0)
             </p>
           )}
           {selectedModelInfo?.value === "stabilityai/stable-diffusion-2-1" && (
             <p className="text-xs text-primary/70 leading-relaxed">
-              SD 2.1: Schnellstes Modell, ideal bei Server-Auslastung
+              SD 2.1: Fastest model, ideal when servers are busy
             </p>
           )}
-        </div>
-
-        <FieldSelect
-          label="Negative Prompt Preset"
-          value={negativePreset}
-          onValueChange={(v) => setNegativePreset(v as NegativePromptPreset)}
-        >
-          {NEGATIVE_PROMPT_PRESET_OPTIONS.map((key) => (
-            <SelectItem key={key} value={key}>
-              {key}
-            </SelectItem>
-          ))}
-        </FieldSelect>
-
-        <div className="space-y-1.5">
-          <Label className="text-xs text-muted-foreground">
-            Custom Negative Prompt
-          </Label>
-          <Textarea
-            placeholder="Additional things to avoid..."
-            value={customNegative}
-            onChange={(e) => setCustomNegative(e.target.value)}
-            className="bg-background/40 border-border/30 text-sm resize-none h-16 focus:ring-ring/50"
-          />
         </div>
       </SectionCard>
 
@@ -601,6 +608,7 @@ export default function ImageGenerationForm({
             Scene Description
           </Label>
           <Textarea
+            data-ocid="form.scene.textarea"
             placeholder="Describe your scene, subject, or specific details..."
             value={scene}
             onChange={(e) => setScene(e.target.value)}
@@ -625,6 +633,7 @@ export default function ImageGenerationForm({
           label="Ethnicity / Diversity"
           value={ethnicity}
           onValueChange={setEthnicity}
+          ocid="form.ethnicity.select"
         >
           {ETHNICITIES.map((e) => (
             <SelectItem key={e} value={e}>
@@ -637,6 +646,7 @@ export default function ImageGenerationForm({
           label="Clothing Style"
           value={clothing}
           onValueChange={setClothing}
+          ocid="form.clothing.select"
         >
           {CLOTHING_STYLES.map((c) => (
             <SelectItem key={c} value={c}>
@@ -649,6 +659,7 @@ export default function ImageGenerationForm({
           label="Environment"
           value={environment}
           onValueChange={setEnvironment}
+          ocid="form.environment.select"
         >
           {ENVIRONMENTS.map((e) => (
             <SelectItem key={e} value={e}>
@@ -667,6 +678,7 @@ export default function ImageGenerationForm({
           label="Camera Lens"
           value={cameraLens}
           onValueChange={setCameraLens}
+          ocid="form.camera_lens.select"
         >
           {CAMERA_LENSES.map((l) => (
             <SelectItem key={l} value={l}>
@@ -679,6 +691,7 @@ export default function ImageGenerationForm({
           label="Camera Angle"
           value={cameraAngle}
           onValueChange={setCameraAngle}
+          ocid="form.camera_angle.select"
         >
           {CAMERA_ANGLES.map((a) => (
             <SelectItem key={a} value={a}>
@@ -691,6 +704,7 @@ export default function ImageGenerationForm({
           label="Lighting"
           value={lighting}
           onValueChange={setLighting}
+          ocid="form.lighting.select"
         >
           {LIGHTING_OPTIONS.map((l) => (
             <SelectItem key={l} value={l}>
@@ -703,6 +717,7 @@ export default function ImageGenerationForm({
           label="Composition"
           value={composition}
           onValueChange={setComposition}
+          ocid="form.composition.select"
         >
           {COMPOSITIONS.map((c) => (
             <SelectItem key={c} value={c}>
@@ -751,7 +766,7 @@ export default function ImageGenerationForm({
                     className={[
                       "flex-1 py-1.5 px-2 text-xs font-medium rounded-md border capitalize transition-all duration-150",
                       selectedIntensity === level
-                        ? "border-primary/60 bg-primary/15 text-primary shadow-glow-sm"
+                        ? "border-primary/60 bg-primary/15 text-primary"
                         : "border-border/30 bg-background/30 text-muted-foreground hover:border-primary/30 hover:text-foreground",
                     ].join(" ")}
                   >
@@ -800,25 +815,93 @@ export default function ImageGenerationForm({
         )}
       </SectionCard>
 
-      {/* ── 7. Prompt Preview ────────────────────────────────────────────── */}
+      {/* ── 7. Negative Prompts ──────────────────────────────────────────── */}
       <SectionCard
         icon={<Layers className="w-3.5 h-3.5" />}
+        title="Negative Prompts"
+      >
+        <FieldSelect
+          label="Negative Prompt Preset"
+          value={negativePreset}
+          onValueChange={(v) => setNegativePreset(v as NegativePromptPreset)}
+          ocid="form.negative_preset.select"
+        >
+          {NEGATIVE_PROMPT_PRESET_OPTIONS.map((key) => (
+            <SelectItem key={key} value={key}>
+              {key}
+            </SelectItem>
+          ))}
+        </FieldSelect>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">
+            Custom Negative Prompt
+          </Label>
+          <Textarea
+            data-ocid="form.negative_custom.textarea"
+            placeholder="Additional things to avoid..."
+            value={customNegative}
+            onChange={(e) => setCustomNegative(e.target.value)}
+            className="bg-background/40 border-border/30 text-sm resize-none h-16 focus:ring-ring/50"
+          />
+        </div>
+      </SectionCard>
+
+      {/* ── 8. Prompt Preview ────────────────────────────────────────────── */}
+      <SectionCard
+        icon={<Wand2 className="w-3.5 h-3.5" />}
         title="Prompt Preview"
       >
-        <div className="rounded-md bg-background/40 border border-border/20 p-3 min-h-[64px]">
+        <div className="rounded-md bg-background/40 border border-border/20 p-3 min-h-[64px] relative group">
           {prompt ? (
-            <p className="text-xs text-foreground/80 leading-relaxed font-mono break-words">
-              {prompt}
-            </p>
+            <>
+              <p className="text-xs text-foreground/80 leading-relaxed font-mono break-words pr-7">
+                {prompt}
+              </p>
+              <button
+                type="button"
+                onClick={handleCopyPrompt}
+                aria-label="Copy prompt to clipboard"
+                className="absolute top-2.5 right-2.5 text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
+              >
+                {promptCopied ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                ) : (
+                  <ClipboardCopy className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </>
           ) : (
             <p className="text-xs text-muted-foreground/50 italic">
               Configure settings above to see your assembled prompt…
             </p>
           )}
         </div>
+        {prompt && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleCopyPrompt}
+            data-ocid="form.copy_prompt.button"
+            className="w-full h-8 text-xs border-border/30 bg-background/30 hover:bg-primary/10 hover:border-primary/40 hover:text-primary transition-all duration-200"
+          >
+            {promptCopied ? (
+              <span className="flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-emerald-500" />
+                Copied!
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5">
+                <ClipboardCopy className="w-3.5 h-3.5" />
+                Copy Prompt
+              </span>
+            )}
+          </Button>
+        )}
       </SectionCard>
 
-      {/* ── 8. Generate button ───────────────────────────────────────────── */}
+      {/* ── 9. Generate button ───────────────────────────────────────────── */}
       <Button
         data-ocid="form.generate.primary_button"
         onClick={handleGenerate}

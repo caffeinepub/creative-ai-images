@@ -1,0 +1,67 @@
+// Version: 1.0.0
+type Data__159895909<T> = {var count : Nat__490723111; elements : [var ?T]};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type Int__270357528 = Int__616954475;
+type Int__616954475 = Int;
+type Internal__667636161<T> =
+  {children : [var ?Node__92254746<T>]; data : Data__159895909<T>};
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__520550824<T> = {data : Data__159895909<T>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type Node__92254746<T> =
+  {#internal : Internal__667636161<T>; #leaf : Leaf__520550824<T>};
+type PoseCriteria__4716980 =
+  {
+    age : Nat;
+    artStyle : Text;
+    aspectRatio : Text;
+    bodyType : Text;
+    cameraAngle : Text;
+    cameraLens : Text;
+    clothing : Text;
+    composition : Text;
+    environment : Text;
+    ethnicity : Text;
+    height : Float;
+    lighting : Text;
+    negativePrompt : Text;
+    situationBehavior : Text;
+    situationFiguration : Text;
+    situationPose : Text;
+    situationPosing : Text;
+    weight : Float
+  };
+type Preset__182512855 = {criteria : PoseCriteria__4716980; name : Text};
+type PromptHistory__394418149 =
+  {
+    criteria : PoseCriteria__4716980;
+    prompt : Text;
+    timestamp : Time__900049286
+  };
+type Time__796480547 = Int__270357528;
+type Time__900049286 = Time__796480547;
+actor {
+  stable environmentVariables :
+    {var root : Node__46230540<Text, Text>; var size : Nat__490723111};
+  stable fallbackModels : [Text];
+  stable poseCriteriaSet :
+    {var root : Node__92254746<Text>; var size : Nat__490723111};
+  stable presetsList :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Preset__182512855]];
+      var elementIndex : Nat__490723111
+    };
+  stable promptHistoryList :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?PromptHistory__394418149]];
+      var elementIndex : Nat__490723111
+    }
+};

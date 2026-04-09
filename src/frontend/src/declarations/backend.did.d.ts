@@ -20,6 +20,7 @@ export interface GenerateImageArgs {
 }
 export type GenerateImageResult = { 'ok' : string } |
   { 'err' : string };
+export interface Header { 'value' : string, 'name' : string }
 export interface PoseCriteria {
   'age' : bigint,
   'weight' : number,
@@ -49,46 +50,18 @@ export interface PromptHistory {
 export type Time = bigint;
 export interface TransformationInput {
   'context' : Uint8Array,
-  'response' : http_request_result,
+  'response' : {
+    'status' : bigint,
+    'body' : Uint8Array,
+    'headers' : Array<Header>,
+  },
 }
 export interface TransformationOutput {
   'status' : bigint,
   'body' : Uint8Array,
-  'headers' : Array<http_header>,
-}
-export interface _CaffeineStorageCreateCertificateResult {
-  'method' : string,
-  'blob_hash' : string,
-}
-export interface _CaffeineStorageRefillInformation {
-  'proposed_top_up_amount' : [] | [bigint],
-}
-export interface _CaffeineStorageRefillResult {
-  'success' : [] | [boolean],
-  'topped_up_amount' : [] | [bigint],
-}
-export interface http_header { 'value' : string, 'name' : string }
-export interface http_request_result {
-  'status' : bigint,
-  'body' : Uint8Array,
-  'headers' : Array<http_header>,
+  'headers' : Array<Header>,
 }
 export interface _SERVICE {
-  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
-  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
-  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
-    [Array<Uint8Array>],
-    undefined
-  >,
-  '_caffeineStorageCreateCertificate' : ActorMethod<
-    [string],
-    _CaffeineStorageCreateCertificateResult
-  >,
-  '_caffeineStorageRefillCashier' : ActorMethod<
-    [[] | [_CaffeineStorageRefillInformation]],
-    _CaffeineStorageRefillResult
-  >,
-  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   'generateImage' : ActorMethod<
     [GenerateImageArgs, string, string],
     GenerateImageResult

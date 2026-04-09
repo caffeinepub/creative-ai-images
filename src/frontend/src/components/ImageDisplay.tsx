@@ -1,7 +1,16 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, ImageIcon, Info, Loader2, RefreshCw } from "lucide-react";
+import {
+  AlertCircle,
+  Download,
+  ImageIcon,
+  Info,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
+import { toast } from "sonner";
 
 interface ImageDisplayProps {
   imageUrl: string | null;
@@ -17,9 +26,28 @@ interface FriendlyError {
   title: string;
   message: string;
   hint?: string;
+  recovery?: string;
 }
 
 function getFriendlyError(error: string): FriendlyError {
+  // IC0508 — canister stopped (most specific, check first)
+  if (
+    error.includes("IC0508") ||
+    error.includes("is stopped") ||
+    (error.toLowerCase().includes("canister") &&
+      error.toLowerCase().includes("stopped"))
+  ) {
+    return {
+      title: "Backend Service Stopped",
+      message:
+        "The backend canister has stopped or run out of cycles on the Internet Computer.",
+      hint: "This is an infrastructure issue, not a code bug.",
+      recovery:
+        "Click Rebuild / Redeploy in the Caffeine dashboard to restart the canister.",
+    };
+  }
+
+  // Token missing
   if (
     error.includes("HF_TOKEN_MISSING") ||
     error.includes("HF_TOKEN not set") ||
@@ -33,6 +61,7 @@ function getFriendlyError(error: string): FriendlyError {
     };
   }
 
+  // Empty response
   if (
     error.includes("HF_EMPTY_RESPONSE") ||
     error.includes("empty HTTP response") ||
@@ -41,53 +70,73 @@ function getFriendlyError(error: string): FriendlyError {
     return {
       title: "Service Returned Empty Response",
       message:
-        "The image generation model returned an empty response. This usually means it is temporarily overloaded.",
-      hint: "Wait a few seconds and try again. The Hugging Face free tier can be busy during peak hours.",
+        "The image generation model returned an empty response. The model may be temporarily overloaded.",
+      hint: "Wait a few seconds and try again, or switch to Stable Diffusion 2.1 which handles high traffic better.",
     };
   }
 
+  // 401 — Invalid token
   if (error.includes("HF_REQUEST_FAILED:401")) {
     return {
       title: "Invalid API Token",
       message:
         "Your Hugging Face API token is invalid or expired. Please update it in the API Configuration panel.",
+      recovery: "Get a new token at huggingface.co/settings/tokens",
     };
   }
 
+  // 403 — Forbidden
+  if (error.includes("HF_REQUEST_FAILED:403")) {
+    return {
+      title: "Access Denied",
+      message:
+        "Your API token does not have permission to use this model. Some models require accepting a license on Hugging Face before use.",
+      recovery:
+        "Visit the model page on huggingface.co and click 'Agree and access repository'.",
+    };
+  }
+
+  // 503 — Model loading / overloaded
   if (error.includes("HF_REQUEST_FAILED:503")) {
     return {
-      title: "Model Loading",
+      title: "Model Loading or Overloaded",
       message:
-        "The AI model is currently loading on Hugging Face servers. This can take 20–60 seconds on the free tier.",
-      hint: "Try again in a moment — the model will warm up and respond faster on subsequent requests.",
+        "The AI model is currently loading or overloaded on Hugging Face servers. This is common on the free tier during peak hours.",
+      hint: "Try again in 20–60 seconds, or switch to Stable Diffusion 2.1 for more reliable availability.",
     };
   }
 
+  // 429 — Rate limit
   if (error.includes("HF_REQUEST_FAILED:429")) {
     return {
       title: "Rate Limit Reached",
       message:
         "You've hit the Hugging Face API rate limit. Please wait before retrying.",
+      hint: "The free tier has limited requests per hour. Try again in a few minutes.",
     };
   }
 
+  // 404 — Model not found
   if (error.includes("HF_REQUEST_FAILED:404")) {
     return {
       title: "Model Not Found",
       message:
         "The selected model could not be found on Hugging Face. It may have been removed or renamed.",
-      hint: "Try switching to a different model such as 'stabilityai/stable-diffusion-xl-base-1.0' or 'runwayml/stable-diffusion-v1-5'.",
+      hint: "Try switching to 'stabilityai/stable-diffusion-xl-base-1.0' or 'stabilityai/stable-diffusion-2-1'.",
     };
   }
 
+  // 400 — Bad request
   if (error.includes("HF_REQUEST_FAILED:400")) {
     return {
       title: "Bad Request",
       message:
         "The request to the image generation service was invalid. Please adjust your prompt and try again.",
+      hint: "Avoid special characters like quotes or backslashes in your prompt text.",
     };
   }
 
+  // Generic HF error with code
   if (error.includes("HF_REQUEST_FAILED")) {
     const match = error.match(/HF_REQUEST_FAILED:(\d+):(.+)/);
     if (match) {
@@ -98,14 +147,17 @@ function getFriendlyError(error: string): FriendlyError {
     }
   }
 
+  // Backend actor not ready
   if (error.includes("Backend actor not initialized")) {
     return {
       title: "Connection Error",
       message:
         "The backend is not yet ready. Please wait a moment and try again.",
+      hint: "The canister may still be initializing after a fresh deploy.",
     };
   }
 
+  // IC0503 — trap / execution error
   if (
     error.toLowerCase().includes("ic0503") ||
     (error.toLowerCase().includes("canister") &&
@@ -114,25 +166,31 @@ function getFriendlyError(error: string): FriendlyError {
     return {
       title: "Service Temporarily Unavailable",
       message:
-        "The image generation service encountered an error, often caused by a slow or empty model response.",
+        "The image generation service encountered an execution error, often caused by a slow or empty model response.",
       hint: "Try again in a moment.",
     };
   }
 
-  if (error.includes("is no longer supported")) {
-    return {
-      title: "Endpoint Outdated",
-      message:
-        "The image generation endpoint is outdated. Please contact support to get the latest version.",
-    };
-  }
-
+  // Timeout
   if (error.includes("timed out") || error.includes("timeout")) {
     return {
       title: "Request Timed Out",
       message:
         "The model took too long to respond. FLUX.1-schnell can be slow on the free tier during peak hours.",
-      hint: "Try switching to 'Stable Diffusion 2.1' in the model selector — it's faster and more reliable on the free tier.",
+      hint: "Try switching to 'Stable Diffusion 2.1' — it's faster and more reliable on the free tier.",
+    };
+  }
+
+  // Router response size error
+  if (
+    error.toLowerCase().includes("max response") ||
+    error.toLowerCase().includes("range 0 to 2000000")
+  ) {
+    return {
+      title: "Response Too Large",
+      message:
+        "The generated image exceeded the maximum allowed response size (2 MB). The model produced a very large file.",
+      hint: "Try a different model or a smaller aspect ratio like 1:1.",
     };
   }
 
@@ -156,6 +214,17 @@ export function ImageDisplay({
   retryMessage,
 }: ImageDisplayProps) {
   const friendlyError = error ? getFriendlyError(error) : null;
+
+  const handleDownload = () => {
+    if (!imageUrl) return;
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = `ai-image-${Date.now()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Image downloaded!");
+  };
 
   return (
     <div className="space-y-4">
@@ -181,7 +250,7 @@ export function ImageDisplay({
                   This may take 20–60 seconds
                 </p>
                 {retryMessage && (
-                  <p className="text-xs text-muted-foreground animate-pulse mt-2">
+                  <p className="text-xs text-amber-400/80 animate-pulse mt-2 max-w-xs">
                     {retryMessage}
                   </p>
                 )}
@@ -195,10 +264,23 @@ export function ImageDisplay({
                 className="w-full h-auto object-contain rounded-lg animate-scale-in"
                 style={{ maxHeight: "640px" }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg pointer-events-none" />
+              {/* Hover overlay with download */}
+              <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg pointer-events-none" />
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleDownload}
+                className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-card/80 backdrop-blur-sm border-border/40 hover:bg-card text-xs h-8"
+              >
+                <Download className="w-3.5 h-3.5 mr-1.5" />
+                Save
+              </Button>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-80 gap-4 text-muted-foreground">
+            <div
+              data-ocid="image.empty_state"
+              className="flex flex-col items-center justify-center h-80 gap-4 text-muted-foreground"
+            >
               <div className="w-20 h-20 rounded-2xl border border-border/40 bg-muted/20 flex items-center justify-center">
                 <ImageIcon className="w-9 h-9 opacity-25" />
               </div>
@@ -232,6 +314,12 @@ export function ImageDisplay({
               <p className="flex items-start gap-1.5 text-xs opacity-75 mt-1">
                 <RefreshCw className="w-3 h-3 flex-shrink-0 mt-0.5" />
                 {friendlyError.hint}
+              </p>
+            )}
+            {friendlyError.recovery && (
+              <p className="flex items-start gap-1.5 text-xs text-amber-400/80 mt-1 font-medium">
+                <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
+                {friendlyError.recovery}
               </p>
             )}
           </AlertDescription>
